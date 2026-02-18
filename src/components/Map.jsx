@@ -8,7 +8,21 @@ const mapAPIKey = import.meta.env.VITE_GOOGLE_MAPS_KEY;
 function MapComponent() {
   const [nodes, setNodes] = useState([]);
   const [center, setCenter] = useState(null);
-  const [selectedNode, setSelectedNode] = useState(null);
+  const [openCards, setOpenCards] = useState([]);
+
+  const handleMarkerClick = (node) => {
+    setOpenCards((prev) => {
+      const exists = prev.find((item) => item.id === node.id);
+
+      if (exists) return prev; // ไม่เปิดซ้ำ
+
+      return [...prev, node];
+    });
+  };
+
+  const handleCloseCard = (id) => {
+    setOpenCards((prev) => prev.filter((item) => item.id !== id));
+  };
 
 
   useEffect(() => {
@@ -52,45 +66,62 @@ function MapComponent() {
               <Marker
                 key={node.id}
                 position={{ lat, lng }}
-                onClick={() => setSelectedNode(node)}
+                onClick={() => handleMarkerClick(node)}
               />
+
             );
           })}
 
-          {selectedNode && (
+          {openCards.map((node) => (
             <OverlayView
+              key={node.id}
               position={{
-                lat: parseFloat(selectedNode.node_latitude),
-                lng: parseFloat(selectedNode.node_longitude),
+                lat: parseFloat(node.node_latitude),
+                lng: parseFloat(node.node_longitude),
               }}
               mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
             >
               <div style={styles.cardWrapper}>
                 <div style={styles.card}>
-                  <h2>{selectedNode.node_name}</h2>
 
-                  <p>
-                    ความเร็ว: {selectedNode.node_speed} km/h
-                  </p>
+                  {/* ปุ่มปิด */}
+                  <div
+                    style={styles.closeBtn}
+                    onClick={() => handleCloseCard(node.id)}
+                  >
+                    ✕
+                  </div>
 
-                  <p>
-                    จำนวนรถ: {selectedNode.node_countcar} n / 10 m
-                  </p>
+                  {/* Header */}
+                  <div style={styles.header}>
+                    <div style={styles.redDot}></div>
+                    <div style={styles.nodeName}>
+                      {node.node_name}
+                    </div>
+                  </div>
 
-                  <p>
-                    การจราจร:{" "}
-                    <span style={{ color: "red", fontWeight: "bold" }}>
-                      {selectedNode.node_status}
-                    </span>
-                  </p>
+                  {/* แสดงข้อมูล */}
+                  <div style={styles.boxData}>
+                    {/* ข้อความ */}
+                    <div style={styles.label}>
+                      <p>ความเร็วเฉลี่ย</p>
+                      <p>จำนวยานพาหนะ</p>
+                      <p>สถานะ</p>
+                    </div>
+
+                    {/* ข้อมูล */}
+                    <div style={styles.value}>
+                      <p>{node.node_speed} กม/ชม</p>
+                      <p>{node.node_countcar} คัน/นาที</p>
+                      <p style={{ color: "red", fontWeight: "bold" }}>{node.node_status}</p>
+                    </div>
+                  </div>
+
                 </div>
-
                 <div style={styles.arrow}></div>
               </div>
             </OverlayView>
-          )}
-
-
+          ))}
         </GoogleMap>
       )}
     </LoadScript>
@@ -100,32 +131,75 @@ function MapComponent() {
 const styles = {
   cardWrapper: {
     position: "relative",
-    transform: "translate(-50%, -120%)",
+    transform: "translate(-50%, -110%)",
     display: "flex",
     flexDirection: "column",
-    alignItems: "center",   // 👈 ทำให้ arrow อยู่กึ่งกลาง
+    alignItems: "center",
   },
 
   card: {
     background: "#f3f3f3",
-    padding: "20px",
-    borderRadius: "30px",
+    padding: "18px 20px",
+    borderRadius: "28px",
     border: "4px solid red",
-    minWidth: "320px",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
+    minWidth: "380px",
+    boxShadow: "0 12px 30px rgba(0,0,0,0.25)",
+    position: "relative",
+    fontFamily: "Kanit, sans-serif",
+  },
+
+  closeBtn: {
+    position: "absolute",
+    top: 16,
+    right: 20,
+    fontSize: "22px",
+    cursor: "pointer",
+    fontWeight: "bold",
+  },
+
+  header: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: "22px",
+    position: "relative",
+  },
+
+  redDot: {
+    width: "16px",
+    height: "16px",
+    backgroundColor: "red",
+    borderRadius: "50%",
+    position: "absolute",
+    left: 0,
+  },
+
+  nodeName: {
+    fontSize: "40px",
+    fontWeight: "bold",
+  },
+
+  boxData: {
+    display: "flex",
+    justifyContent: "space-between",
+    fontSize: "22px",
+  },
+
+  row: {
+    display: "flex",
+    justifyContent: "start",
+    marginBottom: "14px",
+    fontSize: "22px",
   },
 
   arrow: {
     width: 0,
     height: 0,
-    borderLeft: "18px solid transparent",
-    borderRight: "18px solid transparent",
-    borderTop: "18px solid red",
-    marginTop: "-4px",  // 👈 ดึงชิดการ์ด
+    borderLeft: "20px solid transparent",
+    borderRight: "20px solid transparent",
+    borderTop: "20px solid red",
+    marginTop: "0px",
   },
-
 };
-
-
 
 export default MapComponent;
