@@ -89,7 +89,10 @@ function MapComponent() {
 
             >
               <div style={styles.cardWrapper}>
-                <div style={styles.card}>
+                <div 
+                style={styles.card}
+                onClick={(e) => e.stopPropagation()}
+                >
 
                   {/* ปุ่มปิด */}
                   <div
@@ -113,13 +116,13 @@ function MapComponent() {
                     <div style={styles.label}>
                       <p>ความเร็วเฉลี่ย</p>
                       <p>จำนวยานพาหนะ</p>
-                      <p>สถานะ</p>
+                      <p>สถานะการจราจร</p>
                     </div>
 
                     {/* ข้อมูล */}
                     <div style={styles.value}>
-                      <p>{node.node_speed} กม/ชม</p>
-                      <p>{node.node_countcar} คัน/นาที</p>
+                      <p>{node.node_speed}<span style={styles.space}></span>กม/ชม</p>
+                      <p>{node.node_countcar}<span style={styles.space}></span>คัน/นาที</p>
                       <p style={{ color: "red", fontWeight: "bold" }}>{node.node_status}</p>
                     </div>
                   </div>
@@ -174,12 +177,13 @@ const styles = {
   },
 
   redDot: {
-    width: "16px",
-    height: "16px",
+    width: "30px",
+    height: "30px",
     backgroundColor: "red",
     borderRadius: "50%",
     position: "absolute",
     left: 0,
+    bottom:5,
   },
 
   nodeName: {
@@ -207,6 +211,10 @@ const styles = {
     borderRight: "20px solid transparent",
     borderTop: "20px solid red",
     marginTop: "-1px",
+  },
+
+  space: {
+    padding: "10px",
   },
 };
 
