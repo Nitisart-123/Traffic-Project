@@ -14,11 +14,16 @@ function MapComponent() {
     setOpenCards((prev) => {
       const exists = prev.find((item) => item.id === node.id);
 
-      if (exists) return prev; // ไม่เปิดซ้ำ
+      // 🔁 ถ้ามีอยู่แล้ว = ปิด
+      if (exists) {
+        return prev.filter((item) => item.id !== node.id);
+      }
 
+      // 🆕 ถ้ายังไม่มี = เปิด
       return [...prev, node];
     });
   };
+
 
   const handleCloseCard = (id) => {
     setOpenCards((prev) => prev.filter((item) => item.id !== id));
@@ -54,7 +59,8 @@ function MapComponent() {
         <GoogleMap
           mapContainerStyle={{ width: "100vw", height: "100vh" }}
           center={center}
-          zoom={18}
+          zoom={19}
+          onClick={() => setOpenCards([])}
         >
           {nodes.map((node) => {
             const lat = parseFloat(node.node_latitude);
@@ -79,7 +85,8 @@ function MapComponent() {
                 lat: parseFloat(node.node_latitude),
                 lng: parseFloat(node.node_longitude),
               }}
-              mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+              mapPaneName={OverlayView.FLOAT_PANE}
+
             >
               <div style={styles.cardWrapper}>
                 <div style={styles.card}>
@@ -135,17 +142,18 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
+
   },
 
   card: {
     background: "#f3f3f3",
-    padding: "18px 20px",
+    padding: "18px 30px",
     borderRadius: "28px",
     border: "4px solid red",
     minWidth: "380px",
-    boxShadow: "0 12px 30px rgba(0,0,0,0.25)",
     position: "relative",
     fontFamily: "Kanit, sans-serif",
+
   },
 
   closeBtn: {
@@ -198,7 +206,7 @@ const styles = {
     borderLeft: "20px solid transparent",
     borderRight: "20px solid transparent",
     borderTop: "20px solid red",
-    marginTop: "0px",
+    marginTop: "-1px",
   },
 };
 
