@@ -36,14 +36,13 @@ function MapComponent() {
         return "#ff0000"; // แดง
 
       case "รถติดน้อย":
-        return "#ffc107"; // เหลือง
+        return "#ffbf00"; // เหลือง
 
       case "รถไหลปกติ":
         return "#28a745"; // เขียว
 
     }
   };
-
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
@@ -71,15 +70,21 @@ function MapComponent() {
     return () => unsubscribe();
   }, []);
 
-
   return (
     <LoadScript googleMapsApiKey={mapAPIKey}>
       {center && (
         <GoogleMap
-          mapContainerStyle={{ width: "100vw", height: "100vh" }}
+          mapContainerStyle={{
+            width: "100vw",
+            height: "calc(100vh - 70px)"
+          }}
           center={center}
           zoom={19}
           onClick={() => setOpenCards([])}
+          options={{
+            gestureHandling: "greedy",   // ✅ ให้ scroll ซูมได้เลย
+            scrollwheel: true,
+          }}
         >
           {nodes.map((node) => {
             const lat = parseFloat(node.node_latitude);
@@ -93,16 +98,16 @@ function MapComponent() {
                 position={{ lat, lng }}
                 onClick={() => handleMarkerClick(node)}
                 icon={{
-                  path: window.google.maps.SymbolPath.CIRCLE,
-                  scale: 10,
-                  fillColor: getStatusColor(node.node_status),
-                  fillOpacity: 1,
-                  strokeWeight: 2,
-                  strokeColor: "#ffffff",
+                  url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+                      <svg width="40" height="50" viewBox="0 0 24 36" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="${getStatusColor(node.node_status)}"
+                          d="M12 0C5.4 0 0 5.4 0 12c0 9 12 24 12 24s12-15 12-24C24 5.4 18.6 0 12 0z"/>
+                        <circle cx="12" cy="12" r="5" fill="white"/>
+                      </svg>
+                    `)}`,
+                  scaledSize: new window.google.maps.Size(40, 50),
                 }}
               />
-
-
             );
           })}
 
@@ -174,7 +179,6 @@ function MapComponent() {
               </OverlayView>
             );
           })}
-
         </GoogleMap>
       )}
     </LoadScript>
@@ -188,7 +192,6 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-
   },
 
   card: {

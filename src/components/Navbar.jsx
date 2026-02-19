@@ -21,6 +21,7 @@ const styles = {
     justifyContent: "space-between",
     alignItems: "center",
     color: "white",
+    // position: "absolute",
   },
   logo: {
     fontSize: "20px",
