@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { GoogleMap, LoadScript, Marker, OverlayView } from "@react-google-maps/api";
-import { collection, getDocs } from "firebase/firestore";
+// import { collection, getDocs } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
+
 import { db } from "../firebase";
 
 const mapAPIKey = import.meta.env.VITE_GOOGLE_MAPS_KEY;
@@ -29,29 +31,32 @@ function MapComponent() {
     setOpenCards((prev) => prev.filter((item) => item.id !== id));
   };
 
-
   useEffect(() => {
-    const fetchData = async () => {
-      const querySnapshot = await getDocs(collection(db, "Sensor_Node"));
-      const data = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+    const unsubscribe = onSnapshot(
+      collection(db, "Sensor_Node"),
+      (snapshot) => {
+        const data = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
 
-      setNodes(data);
+        setNodes(data);
 
-      if (data.length > 0) {
-        const lat = parseFloat(data[0].node_latitude);
-        const lng = parseFloat(data[0].node_longitude);
+        if (data.length > 0) {
+          const lat = parseFloat(data[0].node_latitude);
+          const lng = parseFloat(data[0].node_longitude);
 
-        if (!isNaN(lat) && !isNaN(lng)) {
-          setCenter({ lat, lng });
+          if (!isNaN(lat) && !isNaN(lng)) {
+            setCenter({ lat, lng });
+          }
         }
       }
-    };
+    );
 
-    fetchData();
+    // 🔥 cleanup ตอน component ถูก unmount
+    return () => unsubscribe();
   }, []);
+
 
   return (
     <LoadScript googleMapsApiKey={mapAPIKey}>
@@ -89,9 +94,9 @@ function MapComponent() {
 
             >
               <div style={styles.cardWrapper}>
-                <div 
-                style={styles.card}
-                onClick={(e) => e.stopPropagation()}
+                <div
+                  style={styles.card}
+                  onClick={(e) => e.stopPropagation()}
                 >
 
                   {/* ปุ่มปิด */}
@@ -183,7 +188,7 @@ const styles = {
     borderRadius: "50%",
     position: "absolute",
     left: 0,
-    bottom:5,
+    bottom: 5,
   },
 
   nodeName: {
