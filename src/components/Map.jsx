@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { GoogleMap, LoadScript, Marker, OverlayView } from "@react-google-maps/api";
-// import { collection, getDocs } from "firebase/firestore";
 import { collection, onSnapshot } from "firebase/firestore";
 
 import { db } from "../firebase";
@@ -26,10 +25,25 @@ function MapComponent() {
     });
   };
 
-
   const handleCloseCard = (id) => {
     setOpenCards((prev) => prev.filter((item) => item.id !== id));
   };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "รถติดหยุดนิ่ง":
+      case "รถติดมาก":
+        return "#ff0000"; // แดง
+
+      case "รถติดน้อย":
+        return "#ffc107"; // เหลือง
+
+      case "รถไหลปกติ":
+        return "#28a745"; // เขียว
+
+    }
+  };
+
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
@@ -78,65 +92,89 @@ function MapComponent() {
                 key={node.id}
                 position={{ lat, lng }}
                 onClick={() => handleMarkerClick(node)}
+                icon={{
+                  path: window.google.maps.SymbolPath.CIRCLE,
+                  scale: 10,
+                  fillColor: getStatusColor(node.node_status),
+                  fillOpacity: 1,
+                  strokeWeight: 2,
+                  strokeColor: "#ffffff",
+                }}
               />
+
 
             );
           })}
 
-          {openCards.map((node) => (
-            <OverlayView
-              key={node.id}
-              position={{
-                lat: parseFloat(node.node_latitude),
-                lng: parseFloat(node.node_longitude),
-              }}
-              mapPaneName={OverlayView.FLOAT_PANE}
-
-            >
-              <div style={styles.cardWrapper}>
-                <div
-                  style={styles.card}
-                  onClick={(e) => e.stopPropagation()}
-                >
-
-                  {/* ปุ่มปิด */}
+          {openCards.map((node) => {
+            const color = getStatusColor(node.node_status);
+            return (
+              <OverlayView
+                key={node.id}
+                position={{
+                  lat: parseFloat(node.node_latitude),
+                  lng: parseFloat(node.node_longitude),
+                }}
+                mapPaneName={OverlayView.FLOAT_PANE}
+              >
+                <div style={styles.cardWrapper}>
                   <div
-                    style={styles.closeBtn}
-                    onClick={() => handleCloseCard(node.id)}
+                    style={{
+                      ...styles.card,
+                      border: `4px solid ${color}`,
+                    }}
+                    onClick={(e) => e.stopPropagation()}
                   >
-                    ✕
-                  </div>
 
-                  {/* Header */}
-                  <div style={styles.header}>
-                    <div style={styles.redDot}></div>
-                    <div style={styles.nodeName}>
-                      {node.node_name}
+                    <div
+                      style={styles.closeBtn}
+                      onClick={() => handleCloseCard(node.id)}
+                    >
+                      ✕
+                    </div>
+
+                    <div style={styles.header}>
+                      <div
+                        style={{
+                          ...styles.redDot,
+                          backgroundColor: color,
+                        }}
+                      ></div>
+
+                      <div style={styles.nodeName}>
+                        {node.node_name}
+                      </div>
+                    </div>
+
+                    <div style={styles.boxData}>
+                      <div style={styles.label}>
+                        <p>ความเร็วเฉลี่ย</p>
+                        <p>จำนวยานพาหนะ</p>
+                        <p>สถานะการจราจร</p>
+                      </div>
+
+                      <div style={styles.value}>
+                        <p>{node.node_speed} กม/ชม</p>
+                        <p>{node.node_countcar} คัน/นาที</p>
+                        <p style={{ color: color, fontWeight: "bold" }}>
+                          {node.node_status}
+                        </p>
+                      </div>
                     </div>
                   </div>
 
-                  {/* แสดงข้อมูล */}
-                  <div style={styles.boxData}>
-                    {/* ข้อความ */}
-                    <div style={styles.label}>
-                      <p>ความเร็วเฉลี่ย</p>
-                      <p>จำนวยานพาหนะ</p>
-                      <p>สถานะการจราจร</p>
-                    </div>
-
-                    {/* ข้อมูล */}
-                    <div style={styles.value}>
-                      <p>{node.node_speed}<span style={styles.space}></span>กม/ชม</p>
-                      <p>{node.node_countcar}<span style={styles.space}></span>คัน/นาที</p>
-                      <p style={{ color: "red", fontWeight: "bold" }}>{node.node_status}</p>
-                    </div>
-                  </div>
-
+                  {/* สามเหลี่ยม */}
+                  <div
+                    style={{
+                      ...styles.arrow,
+                      borderTop: `20px solid ${color}`,
+                    }}
+                  ></div>
                 </div>
-                <div style={styles.arrow}></div>
-              </div>
-            </OverlayView>
-          ))}
+              </OverlayView>
+            );
+          })}
+
         </GoogleMap>
       )}
     </LoadScript>
