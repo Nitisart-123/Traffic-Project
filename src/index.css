@@ -71,3 +71,57 @@ html, body {
   height: 100%;
   overflow: hidden;   /* ❗ ปิด scroll */
 }
+
+
+
+/* ลบพื้นหลังขาว */
+/* ลบพื้นหลังและขอบขาวทั้งหมด */
+.gm-style .gm-style-iw-c {
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+/* ลบ scroll ภายใน */
+.gm-style .gm-style-iw-d {
+  overflow: hidden !important;
+}
+
+/* ซ่อนลูกศรขาวด้านล่าง */
+.gm-style .gm-style-iw-t::after {
+  display: none !important;
+}
+
+/* ปรับปุ่มปิด */
+.gm-ui-hover-effect {
+  top: 8px !important;
+  right: 8px !important;
+}
+
+.gm-ui-hover-effect {
+  display: none !important;
+}
+
+/* ลบพื้นหลังและขอบขาวทั้งหมดของ InfoWindow */
+.gm-style .gm-style-iw-c {
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+/* ลบสามเหลี่ยมขาวด้านล่าง */
+.gm-style .gm-style-iw-t::after {
+  display: none !important;
+}
+
+/* ลบเงา */
+.gm-style .gm-style-iw-d {
+  overflow: hidden !important;
+}
+
+/* ลบปุ่ม X เดิมของ Google */
+.gm-ui-hover-effect {
+  display: none !important;
+}
