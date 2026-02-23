@@ -7,7 +7,6 @@ function Table() {
     const [nodes, setNodes] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [logs, setLogs] = useState([]);
-    const [selectedNode, setSelectedNode] = useState(null);
 
     useEffect(() => {
         const unsubscribe = onSnapshot(
@@ -32,7 +31,7 @@ function Table() {
 
     const getBatteryColor = (battery) => {
         if (battery > 70) return "#16a34a";
-        if (battery > 30) return "#c9b400";
+        if (battery > 30) return "#eab308";
         return "#dc2626";
     };
 
@@ -43,11 +42,9 @@ function Table() {
             return "#eab308"; // เหลือง
         if (status === "รถไหลปกติ")
             return "#16a34a"; // เขียว
-        return "#000";
     };
 
     const openHistory = (nodeId) => {
-        setSelectedNode(nodeId);
         setShowModal(true);
 
         const q = query(
@@ -55,19 +52,20 @@ function Table() {
             where("node_id", "==", nodeId)
         );
 
-        onSnapshot(q, (snapshot) => {
+        const unsubscribe = onSnapshot(q, (snapshot) => {
             const logData = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
             }));
 
-            // เรียงใหม่สุดก่อน
             logData.sort((a, b) =>
                 b.log_datetime?.seconds - a.log_datetime?.seconds
             );
 
             setLogs(logData);
         });
+
+        return unsubscribe;
     };
 
     return (
@@ -132,6 +130,8 @@ function Table() {
                                     <button
                                         style={styles.historyButton}
                                         onClick={() => openHistory(node.node_id)}
+                                        onMouseOver={(e) => e.target.style.backgroundColor = "#1e40af"}
+                                        onMouseOut={(e) => e.target.style.backgroundColor = "#1e3a8a"}
                                     >
                                         ดูประวัติ
                                     </button>
@@ -144,7 +144,7 @@ function Table() {
             {showModal && (
                 <div style={styles.modalOverlay}>
                     <div style={styles.modal}>
-                        <h2>ประวัติย้อนหลัง (Node: {selectedNode})</h2>
+                        <h2>ประวัติย้อนหลัง</h2>
 
                         <table style={styles.table}>
                             <thead>
@@ -252,6 +252,57 @@ const styles = {
     row: {
         borderBottom: "1px solid #ddd",
     },
+
+    historyButton: {
+        backgroundColor: "#1e3a8a",   // น้ำเงินเข้ม
+        color: "white",
+        border: "none",
+        padding: "8px 16px",
+        borderRadius: "6px",
+        cursor: "pointer",
+        fontWeight: "bold",
+        transition: "0.2s ease-in-out",
+    },
+
+    historyButtonHover: {
+        backgroundColor: "#1e40af",
+    },
+
+    modalOverlay: {
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        backgroundColor: "rgba(0,0,0,0.6)",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: 999,
+    },
+
+    modal: {
+        width: "85%",
+        maxHeight: "85vh",
+        overflowY: "auto",
+        background: "white",
+        padding: "30px",
+        borderRadius: "12px",
+        boxShadow: "0 10px 40px rgba(0,0,0,0.3)",
+    },
+
+    closeButton: {
+        marginTop: "20px",
+        backgroundColor: "#dc2626",
+        color: "white",
+        border: "none",
+        padding: "10px 20px",
+        borderRadius: "6px",
+        cursor: "pointer",
+        fontWeight: "bold",
+    },
+
+
 };
 
 export default Table;
