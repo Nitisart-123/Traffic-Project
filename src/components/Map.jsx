@@ -10,7 +10,7 @@ import { db } from "../firebase";
 
 const mapAPIKey = import.meta.env.VITE_GOOGLE_MAPS_KEY;
 
-function MapComponent() {
+function Map() {
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: mapAPIKey,
   });
@@ -247,4 +247,4 @@ const styles = {
   }
 };
 
-export default MapComponent;
+export default Map;
