@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { collection, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "../firebase";
+import bgImage from "../assets/22959.jpg";
 
 function Table() {
     const [nodes, setNodes] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+    const [logs, setLogs] = useState([]);
+    const [selectedNode, setSelectedNode] = useState(null);
 
     useEffect(() => {
         const unsubscribe = onSnapshot(
@@ -42,6 +46,30 @@ function Table() {
         return "#000";
     };
 
+    const openHistory = (nodeId) => {
+        setSelectedNode(nodeId);
+        setShowModal(true);
+
+        const q = query(
+            collection(db, "Sensor_Log"),
+            where("node_id", "==", nodeId)
+        );
+
+        onSnapshot(q, (snapshot) => {
+            const logData = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+
+            // เรียงใหม่สุดก่อน
+            logData.sort((a, b) =>
+                b.log_datetime?.seconds - a.log_datetime?.seconds
+            );
+
+            setLogs(logData);
+        });
+    };
+
     return (
         <div style={styles.container}>
             <h1 style={styles.title}>ตารางข้อมูลการจราจร</h1>
@@ -56,6 +84,7 @@ function Table() {
                         <th style={styles.th}>จำนวนรถ</th>
                         <th style={styles.th}>ความเร็ว</th>
                         <th style={styles.th}>แบตเตอรี่</th>
+                        <th style={styles.th}>ประวัติ</th>
                     </tr>
                 </thead>
 
@@ -99,21 +128,98 @@ function Table() {
                                 >
                                     {node.node_battery}%
                                 </td>
+                                <td style={styles.td}>
+                                    <button
+                                        style={styles.historyButton}
+                                        onClick={() => openHistory(node.node_id)}
+                                    >
+                                        ดูประวัติ
+                                    </button>
+                                </td>
                             </tr>
                         );
                     })}
                 </tbody>
             </table>
+            {showModal && (
+                <div style={styles.modalOverlay}>
+                    <div style={styles.modal}>
+                        <h2>ประวัติย้อนหลัง (Node: {selectedNode})</h2>
+
+                        <table style={styles.table}>
+                            <thead>
+                                <tr>
+                                    <th style={styles.th}>วันที่</th>
+                                    <th style={styles.th}>จำนวนรถ</th>
+                                    <th style={styles.th}>ความเร็ว</th>
+                                    <th style={styles.th}>สถานะ</th>
+                                    <th style={styles.th}>แบตเตอรี่</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {logs.map((log) => {
+                                    const dateObj = log.log_datetime?.toDate?.();
+
+                                    const date = dateObj
+                                        ? dateObj.toLocaleString("th-TH")
+                                        : "-";
+
+                                    return (
+                                        <tr key={log.id}>
+                                            <td style={styles.td}>{date}</td>
+                                            <td style={styles.td}>{log.log_countcar}</td>
+                                            <td style={styles.td}>{log.log_speed}</td>
+                                            <td style={{
+                                                ...styles.td,
+                                                color: getStatusColor(log.log_status),
+                                                fontWeight: "bold"
+                                            }}>
+                                                {log.log_status}
+                                            </td>
+                                            <td style={{
+                                                ...styles.td,
+                                                color: getBatteryColor(log.log_battery),
+                                                fontWeight: "bold"
+                                            }}>
+                                                {log.log_battery}%
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+
+                        <button
+                            style={styles.closeButton}
+                            onClick={() => setShowModal(false)}
+                        >
+                            ปิด
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
 
 const styles = {
     container: {
-        padding: "60px 40px",   // เพิ่มระยะบนล่าง
-        background: "#f5f5f5",
+        padding: "60px 40px",
         minHeight: "100vh",
+        backgroundImage: `
+            linear-gradient(
+                rgba(255, 255, 255, 0.35),
+                rgba(255, 255, 255, 0.35)
+            ),
+            url(${bgImage})
+        `,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
     },
+
 
     title: {
         textAlign: "center",
