@@ -31,7 +31,7 @@ const styles = {
     color: "#1976D2",
     border: "none",
     padding: "8px 16px",
-    marginLeft: "10px",
+    marginLeft: "20px",
     borderRadius: "5px",
     cursor: "pointer",
     fontWeight: "bold",

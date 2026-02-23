@@ -65,7 +65,13 @@ function MapComponent() {
       center={center}
       zoom={19}
       onClick={() => setSelectedNode(null)}
-      options={{ gestureHandling: "greedy" }}
+      options={{
+        gestureHandling: "greedy",
+        fullscreenControl: false,
+        mapTypeControl: false,
+        streetViewControl: false,
+        zoomControl: false,
+      }}
     >
       {/* ---------- MARKER ---------- */}
       {nodes.map((node) => {
@@ -186,6 +192,7 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     fontSize: "25px",
+
   },
 
   label: {
@@ -201,7 +208,7 @@ const styles = {
 
   closeBtn: {
     position: "absolute",
-    top: "10px", 
+    top: "10px",
     right: "0px",
     fontSize: "26px",
     fontWeight: "bold",
@@ -231,6 +238,9 @@ const styles = {
     textAlign: "center",
   },
 
+  labelStyle: {
+    margin: 0,
+  },
   valueStyle: {
     padding: "0px 20px 0px 0px",
     fontWeight: "bold",
