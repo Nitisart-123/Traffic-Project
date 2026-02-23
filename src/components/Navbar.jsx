@@ -8,12 +8,16 @@ function Navbar() {
   const isMapPage = location.pathname === "/";
   const isTablePage = location.pathname === "/table";
 
+  const pageTitle =
+    isMapPage
+      ? "แผนที่จราจร"
+      : "ตารางข้อมูลการจราจร";
+
   return (
     <nav style={styles.navbar}>
-      <div style={styles.logo}>Traffic System</div>
+      <div style={styles.logo}>{pageTitle}</div>
 
       <div>
-        {/* ถ้าอยู่หน้าแผนที่ → แสดงปุ่ม ตารางข้อมูล */}
         {isMapPage && (
           <button
             style={styles.button}
@@ -23,7 +27,6 @@ function Navbar() {
           </button>
         )}
 
-        {/* ถ้าอยู่หน้าตาราง → แสดงปุ่ม ดูแผนที่ */}
         {isTablePage && (
           <button
             style={styles.button}
