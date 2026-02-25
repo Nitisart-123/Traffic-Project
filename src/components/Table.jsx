@@ -172,63 +172,66 @@ function Table() {
                                 ✕
                             </button>
                         </div>
-                        <table style={styles.table}>
-                            <thead>
-                                <tr>
-                                    <th style={styles.th}>วันที่</th>
-                                    <th style={styles.th}>เวลา</th>
-                                    <th style={styles.th}>จำนวนรถ</th>
-                                    <th style={styles.th}>ความเร็ว</th>
-                                    <th style={styles.th}>สถานะ</th>
-                                    <th style={styles.th}>แบตเตอรี่</th>
-                                </tr>
-                            </thead>
 
-                            <tbody>
-                                {logs.map((log) => {
-                                    const dateObj = log.log_datetime?.toDate?.();
+                        <div style={styles.tableWrapper}>
+                            <table style={styles.table}>
+                                <thead>
+                                    <tr>
+                                        <th style={styles.th}>วันที่</th>
+                                        <th style={styles.th}>เวลา</th>
+                                        <th style={styles.th}>จำนวนรถ</th>
+                                        <th style={styles.th}>ความเร็ว</th>
+                                        <th style={styles.th}>สถานะ</th>
+                                        <th style={styles.th}>แบตเตอรี่</th>
+                                    </tr>
+                                </thead>
 
-                                    const date = dateObj
-                                        ? dateObj.toLocaleDateString("th-TH")
-                                        : "-";
+                                <tbody>
+                                    {logs.map((log) => {
+                                        const dateObj = log.log_datetime?.toDate?.();
 
-                                    const time = dateObj
-                                        ? dateObj.toLocaleTimeString("th-TH", {
-                                            hour: "2-digit",
-                                            minute: "2-digit",
-                                            second: "2-digit"
-                                        })
-                                        : "-";
+                                        const date = dateObj
+                                            ? dateObj.toLocaleDateString("th-TH")
+                                            : "-";
 
-                                    return (
-                                        <tr key={log.id}>
-                                            <td style={styles.td}>{date}</td>
-                                            <td style={styles.td}>{time}</td>
-                                            <td style={styles.td}>{log.log_countcar}</td>
-                                            <td style={styles.td}>{log.log_speed}</td>
-                                            <td
-                                                style={{
-                                                    ...styles.td,
-                                                    color: getStatusColor(log.log_status),
-                                                    fontWeight: "bold"
-                                                }}
-                                            >
-                                                {log.log_status}
-                                            </td>
-                                            <td
-                                                style={{
-                                                    ...styles.td,
-                                                    color: getBatteryColor(log.log_battery),
-                                                    fontWeight: "bold"
-                                                }}
-                                            >
-                                                {log.log_battery}%
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
+                                        const time = dateObj
+                                            ? dateObj.toLocaleTimeString("th-TH", {
+                                                hour: "2-digit",
+                                                minute: "2-digit",
+                                                second: "2-digit"
+                                            })
+                                            : "-";
+
+                                        return (
+                                            <tr key={log.id}>
+                                                <td style={styles.td}>{date}</td>
+                                                <td style={styles.td}>{time}</td>
+                                                <td style={styles.td}>{log.log_countcar}</td>
+                                                <td style={styles.td}>{log.log_speed}</td>
+                                                <td
+                                                    style={{
+                                                        ...styles.td,
+                                                        color: getStatusColor(log.log_status),
+                                                        fontWeight: "bold"
+                                                    }}
+                                                >
+                                                    {log.log_status}
+                                                </td>
+                                                <td
+                                                    style={{
+                                                        ...styles.td,
+                                                        color: getBatteryColor(log.log_battery),
+                                                        fontWeight: "bold"
+                                                    }}
+                                                >
+                                                    {log.log_battery}%
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
                         <div style={styles.modalFooter}>
                             <button
                                 style={styles.closeButton}
@@ -273,8 +276,8 @@ const styles = {
         width: "100%",
         borderCollapse: "collapse",
         background: "white",
-        marginTop: "30px",
-        marginBottom: "40px",   // เพิ่มระยะล่าง
+        marginTop: "20px",
+        marginBottom: "30px",   // เพิ่มระยะล่าง
         fontSize: "18px",       // ขยายตัวอักษรในตาราง
     },
 
@@ -309,27 +312,41 @@ const styles = {
         backgroundColor: "#1e40af",
     },
 
+    // ดูประวัติ
+
     modalOverlay: {
         position: "fixed",
         top: 0,
         left: 0,
         width: "100vw",
         height: "100vh",
-        backgroundColor: "rgba(0,0,0,0.6)",
+        backgroundColor: "rgba(0,0,0,0.4)",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
         zIndex: 999,
+        overflowY: "auto"     // ✅ เพิ่มบรรทัดนี้
     },
 
     modal: {
         width: "85%",
-        maxHeight: "85vh",
-        overflowY: "auto",
+        maxHeight: "75vh",
         background: "white",
-        padding: "30px",
+        padding: "20px",           // ลด padding ลง
         borderRadius: "12px",
         boxShadow: "0 10px 40px rgba(0,0,0,0.3)",
+        display: "flex",
+        flexDirection: "column",   // ✅ สำคัญ
+    },
+
+    modalHeader: {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        position: "sticky",
+        top: 0,
+        backgroundColor: "#fff",
+        zIndex: 10,
     },
 
     closeButton: {
@@ -341,13 +358,6 @@ const styles = {
         borderRadius: "6px",
         cursor: "pointer",
         fontWeight: "bold",
-    },
-
-    modalHeader: {
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: "20px",
     },
 
     closeIcon: {
@@ -362,6 +372,18 @@ const styles = {
         display: "flex",
         justifyContent: "flex-end",
         marginTop: "20px",
+    },
+
+    tableWrapper: {
+        flex: 1,                 // ✅ กินพื้นที่ตรงกลาง
+        overflowY: "auto",       // ✅ เลื่อนเฉพาะตาราง
+    },
+
+    modalTable: {
+        width: "100%",
+        borderCollapse: "collapse",
+        background: "white",
+        fontSize: "18px",
     },
 };
 
