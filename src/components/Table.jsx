@@ -7,6 +7,7 @@ function Table() {
     const [nodes, setNodes] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [logs, setLogs] = useState([]);
+    const [logUnsubscribe, setLogUnsubscribe] = useState(null);
 
     useEffect(() => {
         const unsubscribe = onSnapshot(
@@ -45,6 +46,13 @@ function Table() {
     };
 
     const openHistory = (nodeId) => {
+
+        // ปิด listener เก่าก่อนถ้ามี
+        if (logUnsubscribe) {
+            logUnsubscribe();
+        }
+
+        setLogs([]);      // ล้างข้อมูลเก่า
         setShowModal(true);
 
         const q = query(
@@ -65,7 +73,18 @@ function Table() {
             setLogs(logData);
         });
 
-        return unsubscribe;
+        setLogUnsubscribe(() => unsubscribe);
+    };
+
+    const closeModal = () => {
+
+        if (logUnsubscribe) {
+            logUnsubscribe();
+            setLogUnsubscribe(null);
+        }
+
+        setShowModal(false);
+        setLogs([]);
     };
 
     return (
@@ -144,12 +163,20 @@ function Table() {
             {showModal && (
                 <div style={styles.modalOverlay}>
                     <div style={styles.modal}>
-                        <h2>ประวัติย้อนหลัง</h2>
-
+                        <div style={styles.modalHeader}>
+                            <h2>ประวัติย้อนหลัง</h2>
+                            <button
+                                style={styles.closeIcon}
+                                onClick={closeModal}
+                            >
+                                ✕
+                            </button>
+                        </div>
                         <table style={styles.table}>
                             <thead>
                                 <tr>
                                     <th style={styles.th}>วันที่</th>
+                                    <th style={styles.th}>เวลา</th>
                                     <th style={styles.th}>จำนวนรถ</th>
                                     <th style={styles.th}>ความเร็ว</th>
                                     <th style={styles.th}>สถานะ</th>
@@ -162,26 +189,39 @@ function Table() {
                                     const dateObj = log.log_datetime?.toDate?.();
 
                                     const date = dateObj
-                                        ? dateObj.toLocaleString("th-TH")
+                                        ? dateObj.toLocaleDateString("th-TH")
+                                        : "-";
+
+                                    const time = dateObj
+                                        ? dateObj.toLocaleTimeString("th-TH", {
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                            second: "2-digit"
+                                        })
                                         : "-";
 
                                     return (
                                         <tr key={log.id}>
                                             <td style={styles.td}>{date}</td>
+                                            <td style={styles.td}>{time}</td>
                                             <td style={styles.td}>{log.log_countcar}</td>
                                             <td style={styles.td}>{log.log_speed}</td>
-                                            <td style={{
-                                                ...styles.td,
-                                                color: getStatusColor(log.log_status),
-                                                fontWeight: "bold"
-                                            }}>
+                                            <td
+                                                style={{
+                                                    ...styles.td,
+                                                    color: getStatusColor(log.log_status),
+                                                    fontWeight: "bold"
+                                                }}
+                                            >
                                                 {log.log_status}
                                             </td>
-                                            <td style={{
-                                                ...styles.td,
-                                                color: getBatteryColor(log.log_battery),
-                                                fontWeight: "bold"
-                                            }}>
+                                            <td
+                                                style={{
+                                                    ...styles.td,
+                                                    color: getBatteryColor(log.log_battery),
+                                                    fontWeight: "bold"
+                                                }}
+                                            >
                                                 {log.log_battery}%
                                             </td>
                                         </tr>
@@ -189,13 +229,14 @@ function Table() {
                                 })}
                             </tbody>
                         </table>
-
-                        <button
-                            style={styles.closeButton}
-                            onClick={() => setShowModal(false)}
-                        >
-                            ปิด
-                        </button>
+                        <div style={styles.modalFooter}>
+                            <button
+                                style={styles.closeButton}
+                                onClick={closeModal}
+                            >
+                                ปิด
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
@@ -302,7 +343,26 @@ const styles = {
         fontWeight: "bold",
     },
 
+    modalHeader: {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: "20px",
+    },
 
+    closeIcon: {
+        background: "transparent",
+        border: "none",
+        fontSize: "22px",
+        cursor: "pointer",
+        fontWeight: "bold",
+    },
+
+    modalFooter: {
+        display: "flex",
+        justifyContent: "flex-end",
+        marginTop: "20px",
+    },
 };
 
 export default Table;
