@@ -276,8 +276,8 @@ const styles = {
         width: "100%",
         borderCollapse: "collapse",
         background: "white",
-        marginTop: "20px",
-        marginBottom: "30px",   // เพิ่มระยะล่าง
+        // marginTop: "20px",
+        // marginBottom: "30px",   // เพิ่มระยะล่าง
         fontSize: "18px",       // ขยายตัวอักษรในตาราง
     },
 
@@ -347,6 +347,7 @@ const styles = {
         top: 0,
         backgroundColor: "#fff",
         zIndex: 10,
+        marginBottom: "10px",
     },
 
     closeButton: {
