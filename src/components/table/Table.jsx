@@ -122,58 +122,66 @@ function Table() {
                 </thead>
 
                 <tbody>
-                    {filteredNodes.map((node) => {
-                        const dateObj = node.node_datetime?.toDate?.();
+                    {filteredNodes.length === 0 ? (
+                        <tr>
+                            <td colSpan="8" style={styles.noData}>
+                                ไม่พบข้อมูลที่ค้นหา
+                            </td>
+                        </tr>
+                    ) : (
+                        filteredNodes.map((node) => {
+                            const dateObj = node.node_datetime?.toDate?.();
 
-                        const date = dateObj
-                            ? dateObj.toLocaleDateString("th-TH")
-                            : "-";
+                            const date = dateObj
+                                ? dateObj.toLocaleDateString("th-TH")
+                                : "-";
 
-                        const time = dateObj
-                            ? dateObj.toLocaleTimeString("th-TH", {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                            })
-                            : "-";
+                            const time = dateObj
+                                ? dateObj.toLocaleTimeString("th-TH", {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                })
+                                : "-";
 
-                        return (
-                            <tr key={node.id} style={styles.row}>
-                                <td style={styles.td}>{date}</td>
-                                <td style={styles.td}>{time}</td>
-                                <td style={styles.td}>{node.node_name}</td>
-                                <td
-                                    style={{
-                                        ...styles.td,
-                                        color: getStatusColor(node.node_status),
-                                        fontWeight: "bold",
-                                    }}
-                                >
-                                    {node.node_status}
-                                </td>
-                                <td style={styles.td}>{node.node_countcar} คัน/นาที</td>
-                                <td style={styles.td}>{node.node_speed} กม/ชม</td>
-                                <td
-                                    style={{
-                                        ...styles.td,
-                                        color: getBatteryColor(node.node_battery),
-                                        fontWeight: "bold",
-                                    }}
-                                >
-                                    {node.node_battery}%
-                                </td>
-                                <td style={styles.td}>
-                                    <button
-                                        style={styles.historyButton}
-                                        onClick={() => openHistory(node.node_id)}
-                                        onMouseOver={(e) => e.target.style.backgroundColor = "#1e40af"}
-                                        onMouseOut={(e) => e.target.style.backgroundColor = "#1e3a8a"}
+                            return (
+                                <tr key={node.id} style={styles.row}>
+                                    <td style={styles.td}>{date}</td>
+                                    <td style={styles.td}>{time}</td>
+                                    <td style={styles.td}>{node.node_name}</td>
+                                    <td
+                                        style={{
+                                            ...styles.td,
+                                            color: getStatusColor(node.node_status),
+                                            fontWeight: "bold",
+                                        }}
                                     >
-                                        ดูประวัติ
-                                    </button>
-                                </td>
-                            </tr>
-                        );
-                    })}
+                                        {node.node_status}
+                                    </td>
+                                    <td style={styles.td}>{node.node_countcar} คัน/นาที</td>
+                                    <td style={styles.td}>{node.node_speed} กม/ชม</td>
+                                    <td
+                                        style={{
+                                            ...styles.td,
+                                            color: getBatteryColor(node.node_battery),
+                                            fontWeight: "bold",
+                                        }}
+                                    >
+                                        {node.node_battery}%
+                                    </td>
+                                    <td style={styles.td}>
+                                        <button
+                                            style={styles.historyButton}
+                                            onClick={() => openHistory(node.node_id)}
+                                            onMouseOver={(e) => e.target.style.backgroundColor = "#1e40af"}
+                                            onMouseOut={(e) => e.target.style.backgroundColor = "#1e3a8a"}
+                                        >
+                                            ดูประวัติ
+                                        </button>
+                                    </td>
+                                </tr>
+                            );
+                        })
+                    )}
                 </tbody>
             </table>
             <History
@@ -210,7 +218,7 @@ const styles = {
         fontSize: "36px",
         fontWeight: "bold",
         color: "#1f2937",          // สีตัวอักษร
-        textShadow: "0px 0px 10px rgb(255, 255, 255)"  // เงาเหมือนขอบ
+        textShadow: "0px 0px 7px rgb(255, 255, 255)"  // เงาเหมือนขอบ
     },
 
     // เพิ่มสไตล์สำหรับกล่องค้นหา
@@ -227,6 +235,14 @@ const styles = {
         borderRadius: "8px",
         border: "1px solid #ccc",
         outline: "none",
+    },
+
+    noData: {
+        padding: "30px",
+        textAlign: "center",
+        fontSize: "18px",
+        color: "#dc2626",
+        fontWeight: "bold"
     },
 
     // สไตล์สำหรับตาราง
