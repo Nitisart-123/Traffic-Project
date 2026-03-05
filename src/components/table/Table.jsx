@@ -9,6 +9,7 @@ function Table() {
     const [showModal, setShowModal] = useState(false);
     const [logs, setLogs] = useState([]);
     const [logUnsubscribe, setLogUnsubscribe] = useState(null);
+    const [searchName, setSearchName] = useState("");
 
     useEffect(() => {
         const unsubscribe = onSnapshot(
@@ -88,9 +89,23 @@ function Table() {
         setLogs([]);
     };
 
+    const filteredNodes = nodes.filter((node) =>
+        node.node_name?.toLowerCase().includes(searchName.toLowerCase())
+    );
+
     return (
         <div style={styles.container}>
             <h1 style={styles.title}>ตารางข้อมูลการจราจร</h1>
+
+            <div style={styles.searchBox}>
+                <input
+                    type="text"
+                    placeholder="ค้นหาชื่อถนน..."
+                    value={searchName}
+                    onChange={(e) => setSearchName(e.target.value)}
+                    style={styles.searchInput}
+                />
+            </div>
 
             <table style={styles.table}>
                 <thead>
@@ -107,7 +122,7 @@ function Table() {
                 </thead>
 
                 <tbody>
-                    {nodes.map((node) => {
+                    {filteredNodes.map((node) => {
                         const dateObj = node.node_datetime?.toDate?.();
 
                         const date = dateObj
@@ -189,20 +204,37 @@ const styles = {
         backgroundAttachment: "fixed",
     },
 
-
     title: {
         textAlign: "center",
         marginBottom: "40px",
-        fontSize: "36px",       // ขยายหัวข้อ
+        fontSize: "36px",
         fontWeight: "bold",
+        color: "#1f2937",          // สีตัวอักษร
+        textShadow: "0px 0px 10px rgb(255, 255, 255)"  // เงาเหมือนขอบ
     },
+
+    // เพิ่มสไตล์สำหรับกล่องค้นหา
+    searchBox: {
+        display: "flex",
+        justifyContent: "center",
+        marginBottom: "10px",
+    },
+
+    searchInput: {
+        width: "300px",
+        padding: "10px 15px",
+        fontSize: "16px",
+        borderRadius: "8px",
+        border: "1px solid #ccc",
+        outline: "none",
+    },
+
+    // สไตล์สำหรับตาราง
 
     table: {
         width: "100%",
         borderCollapse: "collapse",
         background: "white",
-        // marginTop: "20px",
-        // marginBottom: "30px",   // เพิ่มระยะล่าง
         fontSize: "18px",       // ขยายตัวอักษรในตาราง
     },
 
@@ -235,81 +267,6 @@ const styles = {
 
     historyButtonHover: {
         backgroundColor: "#1e40af",
-    },
-
-    // ดูประวัติ
-
-    modalOverlay: {
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100vw",
-        height: "100vh",
-        backgroundColor: "rgba(0,0,0,0.4)",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 999,
-        overflowY: "auto"     // ✅ เพิ่มบรรทัดนี้
-    },
-
-    modal: {
-        width: "85%",
-        maxHeight: "75vh",
-        background: "white",
-        padding: "20px",           // ลด padding ลง
-        borderRadius: "12px",
-        boxShadow: "0 10px 40px rgba(0,0,0,0.3)",
-        display: "flex",
-        flexDirection: "column",   // ✅ สำคัญ
-    },
-
-    modalHeader: {
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        position: "sticky",
-        top: 0,
-        backgroundColor: "#fff",
-        zIndex: 10,
-        marginBottom: "10px",
-    },
-
-    closeButton: {
-        marginTop: "20px",
-        backgroundColor: "#dc2626",
-        color: "white",
-        border: "none",
-        padding: "10px 20px",
-        borderRadius: "6px",
-        cursor: "pointer",
-        fontWeight: "bold",
-    },
-
-    closeIcon: {
-        background: "transparent",
-        border: "none",
-        fontSize: "22px",
-        cursor: "pointer",
-        fontWeight: "bold",
-    },
-
-    modalFooter: {
-        display: "flex",
-        justifyContent: "flex-end",
-        marginTop: "20px",
-    },
-
-    tableWrapper: {
-        flex: 1,                 // ✅ กินพื้นที่ตรงกลาง
-        overflowY: "auto",       // ✅ เลื่อนเฉพาะตาราง
-    },
-
-    modalTable: {
-        width: "100%",
-        borderCollapse: "collapse",
-        background: "white",
-        fontSize: "18px",
     },
 };
 
