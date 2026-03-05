@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
-import { db } from "../firebase";
-import bgImage from "../assets/22959.jpg";
+import { db } from "../../firebase";
+import bgImage from "../../assets/22959.jpg";
+import History from "./History";
 
 function Table() {
     const [nodes, setNodes] = useState([]);
@@ -134,7 +135,7 @@ function Table() {
                                 >
                                     {node.node_status}
                                 </td>
-                                <td style={styles.td}>{node.node_countcar} คัน</td>
+                                <td style={styles.td}>{node.node_countcar} คัน/นาที</td>
                                 <td style={styles.td}>{node.node_speed} กม/ชม</td>
                                 <td
                                     style={{
@@ -160,89 +161,13 @@ function Table() {
                     })}
                 </tbody>
             </table>
-            {showModal && (
-                <div style={styles.modalOverlay}>
-                    <div style={styles.modal}>
-                        <div style={styles.modalHeader}>
-                            <h2>ประวัติย้อนหลัง</h2>
-                            <button
-                                style={styles.closeIcon}
-                                onClick={closeModal}
-                            >
-                                ✕
-                            </button>
-                        </div>
-
-                        <div style={styles.tableWrapper}>
-                            <table style={styles.table}>
-                                <thead>
-                                    <tr>
-                                        <th style={styles.th}>วันที่</th>
-                                        <th style={styles.th}>เวลา</th>
-                                        <th style={styles.th}>จำนวนรถ</th>
-                                        <th style={styles.th}>ความเร็ว</th>
-                                        <th style={styles.th}>สถานะ</th>
-                                        <th style={styles.th}>แบตเตอรี่</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-                                    {logs.map((log) => {
-                                        const dateObj = log.log_datetime?.toDate?.();
-
-                                        const date = dateObj
-                                            ? dateObj.toLocaleDateString("th-TH")
-                                            : "-";
-
-                                        const time = dateObj
-                                            ? dateObj.toLocaleTimeString("th-TH", {
-                                                hour: "2-digit",
-                                                minute: "2-digit",
-                                                second: "2-digit"
-                                            })
-                                            : "-";
-
-                                        return (
-                                            <tr key={log.id}>
-                                                <td style={styles.td}>{date}</td>
-                                                <td style={styles.td}>{time}</td>
-                                                <td style={styles.td}>{log.log_countcar}</td>
-                                                <td style={styles.td}>{log.log_speed}</td>
-                                                <td
-                                                    style={{
-                                                        ...styles.td,
-                                                        color: getStatusColor(log.log_status),
-                                                        fontWeight: "bold"
-                                                    }}
-                                                >
-                                                    {log.log_status}
-                                                </td>
-                                                <td
-                                                    style={{
-                                                        ...styles.td,
-                                                        color: getBatteryColor(log.log_battery),
-                                                        fontWeight: "bold"
-                                                    }}
-                                                >
-                                                    {log.log_battery}%
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
-                        </div>
-                        <div style={styles.modalFooter}>
-                            <button
-                                style={styles.closeButton}
-                                onClick={closeModal}
-                            >
-                                ปิด
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <History
+                showModal={showModal}
+                logs={logs}
+                closeModal={closeModal}
+                getStatusColor={getStatusColor}
+                getBatteryColor={getBatteryColor}
+            />
         </div>
     );
 }

@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Map from "./components/Map";
-import Table from "./components/Table";
+import Table from "./components/table/Table";
 
 function App() {
   return (
