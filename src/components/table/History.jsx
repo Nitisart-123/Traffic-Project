@@ -1,29 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 
 function History({ showModal, logs, closeModal, getStatusColor, getBatteryColor }) {
 
-    const [startTime, setStartTime] = useState("");
-    const [endTime, setEndTime] = useState("");
-
     if (!showModal) return null;
-
-    const filteredLogs = logs.filter((log) => {
-
-        if (!startTime && !endTime) return true;
-
-        const dateObj = log.log_datetime?.toDate?.();
-        if (!dateObj) return false;
-
-        const time = dateObj.getTime();
-
-        const start = startTime ? new Date(startTime).getTime() : null;
-        const end = endTime ? new Date(endTime).getTime() : null;
-
-        if (start && time < start) return false;
-        if (end && time > end) return false;
-
-        return true;
-    });
 
     return (
         <div style={styles.modalOverlay}>
@@ -31,36 +10,12 @@ function History({ showModal, logs, closeModal, getStatusColor, getBatteryColor 
 
                 <div style={styles.modalHeader}>
                     <h2>ประวัติย้อนหลัง</h2>
-
-
-                    
                     <button
                         style={styles.closeIcon}
                         onClick={closeModal}
                     >
                         ✕
                     </button>
-                </div>
-
-                <div style={styles.searchBox}>
-                    <div>
-                        <label>เวลาเริ่ม</label>
-                        <input
-                            type="datetime-local"
-                            value={startTime}
-                            onChange={(e) => setStartTime(e.target.value)}
-                            style={styles.timeInput}
-                        />
-                    </div>
-                    <div>
-                        <label>เวลาสิ้นสุด</label>
-                        <input
-                            type="datetime-local"
-                            value={endTime}
-                            onChange={(e) => setEndTime(e.target.value)}
-                            style={styles.timeInput}
-                        />
-                    </div>
                 </div>
 
                 <div style={styles.tableWrapper}>
@@ -77,7 +32,7 @@ function History({ showModal, logs, closeModal, getStatusColor, getBatteryColor 
                         </thead>
 
                         <tbody>
-                            {filteredLogs.map((log) => {
+                            {logs.map((log) => {
 
                                 const dateObj = log.log_datetime?.toDate?.();
 
@@ -184,6 +139,7 @@ const styles = {
         display: "flex",
         gap: "20px",
         marginBottom: "10px",
+        justifyContent: "center",
         alignItems: "center",
     },
 
@@ -192,6 +148,16 @@ const styles = {
         marginLeft: "10px",
         borderRadius: "6px",
         border: "1px solid #ccc",
+    },
+
+    searchButton: {
+        backgroundColor: "#2563eb",
+        color: "white",
+        border: "none",
+        padding: "8px 20px",
+        borderRadius: "6px",
+        cursor: "pointer",
+        fontWeight: "bold",
     },
 
 
