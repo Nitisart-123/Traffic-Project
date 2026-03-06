@@ -6,6 +6,8 @@ import bgImage from "../../assets/22959.jpg";
 const CrudNode = () => {
 
     const [nodes, setNodes] = useState([]);
+    const [searchName, setSearchName] = useState("");
+    const [searchedName, setSearchedName] = useState("");
 
     const fetchNodes = async () => {
         const querySnapshot = await getDocs(collection(db, "Sensor_Node"));
@@ -19,20 +21,15 @@ const CrudNode = () => {
     };
 
     useEffect(() => {
-
-        const fetchNodes = async () => {
+        const loadNodes = async () => {
             const querySnapshot = await getDocs(collection(db, "Sensor_Node"));
-
             const data = querySnapshot.docs.map((doc) => ({
                 id: doc.id,
                 ...doc.data(),
             }));
-
             setNodes(data);
         };
-
-        fetchNodes();
-
+        loadNodes();
     }, []);
 
     const deleteNode = async (id) => {
@@ -42,16 +39,54 @@ const CrudNode = () => {
         }
     };
 
+    const handleSearch = () => {
+        setSearchedName(searchName);
+    };
+
+    const handleReset = () => {
+        setSearchName("");
+        setSearchedName("");
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === "Enter") handleSearch();
+    };
+
+    const filteredNodes = nodes.filter((node) =>
+        node.node_name?.toLowerCase().includes(searchedName.toLowerCase())
+    );
+
     return (
         <div style={styles.container}>
 
             <h1 style={styles.title}>ระบบจัดการโหนดเซนเซอร์</h1>
 
-            {/* ปุ่มเพิ่มข้อมูล */}
-            <div style={styles.buttonBox}>
+            {/* ค้นหา + ปุ่มเพิ่ม */}
+            <div style={styles.topBar}>
+
+                <div style={styles.searchBox}>
+                    <input
+                        type="text"
+                        placeholder="ค้นหาชื่อถนน..."
+                        value={searchName}
+                        onChange={(e) => setSearchName(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        style={styles.searchInput}
+                    />
+                    <button style={styles.searchButton} onClick={handleSearch}>
+                        ค้นหา
+                    </button>
+                    {searchedName !== "" && (
+                        <button style={styles.resetButton} onClick={handleReset}>
+                            รีเซ็ต
+                        </button>
+                    )}
+                </div>
+
                 <button style={styles.addButton}>
-                    เพิ่มข้อมูล
+                    + เพิ่มข้อมูล
                 </button>
+
             </div>
 
             {/* ตาราง */}
@@ -69,31 +104,39 @@ const CrudNode = () => {
                 </thead>
 
                 <tbody>
-                    {nodes.map((node) => (
-                        <tr key={node.id} style={styles.row}>
-
-                            <td style={styles.td}>{node.node_id}</td>
-                            <td style={styles.td}>{node.node_name}</td>
-                            <td style={styles.td}>{node.node_latitude}</td>
-                            <td style={styles.td}>{node.node_longitude}</td>
-
-                            <td style={styles.td}>
-                                <button style={styles.editButton}>
-                                    แก้ไข
-                                </button>
+                    {filteredNodes.length === 0 ? (
+                        <tr>
+                            <td colSpan="6" style={styles.noData}>
+                                ไม่พบข้อมูลที่ค้นหา
                             </td>
-
-                            <td style={styles.td}>
-                                <button
-                                    style={styles.deleteButton}
-                                    onClick={() => deleteNode(node.id)}
-                                >
-                                    ลบ
-                                </button>
-                            </td>
-
                         </tr>
-                    ))}
+                    ) : (
+                        filteredNodes.map((node) => (
+                            <tr key={node.id} style={styles.row}>
+
+                                <td style={styles.td}>{node.node_id}</td>
+                                <td style={styles.td}>{node.node_name}</td>
+                                <td style={styles.td}>{node.node_latitude}</td>
+                                <td style={styles.td}>{node.node_longitude}</td>
+
+                                <td style={styles.td}>
+                                    <button style={styles.editButton}>
+                                        แก้ไข
+                                    </button>
+                                </td>
+
+                                <td style={styles.td}>
+                                    <button
+                                        style={styles.deleteButton}
+                                        onClick={() => deleteNode(node.id)}
+                                    >
+                                        ลบ
+                                    </button>
+                                </td>
+
+                            </tr>
+                        ))
+                    )}
                 </tbody>
 
             </table>
@@ -129,10 +172,50 @@ const styles = {
         textShadow: "0px 0px 7px rgb(255,255,255)"
     },
 
-    buttonBox: {
+    topBar: {
         display: "flex",
-        justifyContent: "flex-end",
-        marginBottom: "15px",
+        justifyContent: "center",
+        alignItems: "center",
+        gap: "16px",
+        marginBottom: "10px",
+        flexWrap: "wrap",
+    },
+
+    searchBox: {
+        display: "flex",
+        alignItems: "center",
+        gap: "8px",
+    },
+
+    searchInput: {
+        width: "280px",
+        padding: "10px 15px",
+        fontSize: "16px",
+        borderRadius: "8px",
+        border: "1px solid #ccc",
+        outline: "none",
+    },
+
+    searchButton: {
+        backgroundColor: "#2563eb",
+        color: "white",
+        border: "none",
+        padding: "10px 18px",
+        borderRadius: "8px",
+        cursor: "pointer",
+        fontWeight: "bold",
+        fontSize: "15px",
+    },
+
+    resetButton: {
+        backgroundColor: "#94a3b8",
+        color: "white",
+        border: "none",
+        padding: "10px 14px",
+        borderRadius: "8px",
+        cursor: "pointer",
+        fontWeight: "bold",
+        fontSize: "15px",
     },
 
     addButton: {
@@ -144,6 +227,14 @@ const styles = {
         cursor: "pointer",
         fontWeight: "bold",
         fontSize: "15px",
+    },
+
+    noData: {
+        padding: "30px",
+        textAlign: "center",
+        fontSize: "18px",
+        color: "#dc2626",
+        fontWeight: "bold",
     },
 
     table: {
