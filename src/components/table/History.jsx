@@ -8,6 +8,14 @@ function History({ showModal, logs, closeModal, getStatusColor, getBatteryColor 
     const [searchedEnd, setSearchedEnd] = useState("");
     const [hasSearched, setHasSearched] = useState(false);
 
+    const handleStartDateChange = (e) => {
+        const value = e.target.value;
+        setStartDate(value);
+        if (!endDate || endDate < value) {
+            setEndDate(value);
+        }
+    };
+
     const handleSearch = () => {
         setSearchedStart(startDate);
         setSearchedEnd(endDate);
@@ -60,7 +68,7 @@ function History({ showModal, logs, closeModal, getStatusColor, getBatteryColor 
                         <input
                             type="date"
                             value={startDate}
-                            onChange={(e) => setStartDate(e.target.value)}
+                            onChange={handleStartDateChange}
                             style={styles.dateInput}
                         />
                     </div>
@@ -298,8 +306,9 @@ const styles = {
     emptyCell: {
         padding: "40px",
         textAlign: "center",
-        color: "#94a3b8",
+        color: "#dc2626",
         fontSize: "16px",
+        fontWeight: "bold"
     },
 
     modalFooter: {
