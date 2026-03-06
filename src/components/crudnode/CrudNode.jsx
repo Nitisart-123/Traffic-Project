@@ -7,7 +7,16 @@ const CrudNode = () => {
 
     const [nodes, setNodes] = useState([]);
 
-    // ฟังก์ชันดึงข้อมูล
+    const fetchNodes = async () => {
+        const querySnapshot = await getDocs(collection(db, "Sensor_Node"));
+
+        const data = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+        }));
+
+        setNodes(data);
+    };
 
     useEffect(() => {
 
@@ -28,120 +37,157 @@ const CrudNode = () => {
 
     const deleteNode = async (id) => {
         if (window.confirm("ต้องการลบข้อมูลหรือไม่?")) {
-
             await deleteDoc(doc(db, "Sensor_Node", id));
-
-            const querySnapshot = await getDocs(collection(db, "Sensor_Node"));
-            const data = querySnapshot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-            }));
-
-            setNodes(data);
+            fetchNodes();
         }
     };
 
-
     return (
-        <div
-            style={{
-                backgroundImage: `url(${bgImage})`,
-                backgroundSize: "cover",
-                minHeight: "100vh",
-            }}
-        >
+        <div style={styles.container}>
 
-            {/* Navbar */}
-            <nav
-                style={{
-                    backgroundColor: "#2c3e50",
-                    padding: "15px",
-                    color: "white",
-                    fontSize: "20px",
-                }}
-            >
-                ระบบจัดการโหนดเซนเซอร์
-            </nav>
+            <h1 style={styles.title}>ระบบจัดการโหนดเซนเซอร์</h1>
 
-            <div style={{ padding: "40px" }}>
-
-                {/* ปุ่มเพิ่ม */}
-                <div style={{ textAlign: "right", marginBottom: "10px" }}>
-                    <button
-                        style={{
-                            padding: "10px 20px",
-                            backgroundColor: "#27ae60",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "5px",
-                        }}
-                    >
-                        เพิ่มข้อมูล
-                    </button>
-                </div>
-
-                {/* ตาราง */}
-                <table
-                    style={{
-                        width: "100%",
-                        backgroundColor: "white",
-                        borderCollapse: "collapse",
-                    }}
-                >
-                    <thead style={{ backgroundColor: "#34495e", color: "white" }}>
-                        <tr>
-                            <th style={{ padding: "10px" }}>Node ID</th>
-                            <th>Node Name</th>
-                            <th>Latitude</th>
-                            <th>Longitude</th>
-                            <th>แก้ไข</th>
-                            <th>ลบ</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {nodes.map((node) => (
-                            <tr key={node.id} style={{ textAlign: "center" }}>
-                                <td>{node.node_id}</td>
-                                <td>{node.node_name}</td>
-                                <td>{node.node_latitude}</td>
-                                <td>{node.node_longitude}</td>
-
-                                <td>
-                                    <button
-                                        style={{
-                                            backgroundColor: "#f39c12",
-                                            color: "white",
-                                            border: "none",
-                                            padding: "5px 10px",
-                                            borderRadius: "5px",
-                                        }}
-                                    >
-                                        แก้ไข
-                                    </button>
-                                </td>
-
-                                <td>
-                                    <button
-                                        onClick={() => deleteNode(node.id)}
-                                        style={{
-                                            backgroundColor: "#e74c3c",
-                                            color: "white",
-                                            border: "none",
-                                            padding: "5px 10px",
-                                            borderRadius: "5px",
-                                        }}
-                                    >
-                                        ลบ
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+            {/* ปุ่มเพิ่มข้อมูล */}
+            <div style={styles.buttonBox}>
+                <button style={styles.addButton}>
+                    เพิ่มข้อมูล
+                </button>
             </div>
+
+            {/* ตาราง */}
+            <table style={styles.table}>
+
+                <thead>
+                    <tr>
+                        <th style={styles.th}>รหัสโหนด</th>
+                        <th style={styles.th}>ชื่อถนน</th>
+                        <th style={styles.th}>ละติจูด</th>
+                        <th style={styles.th}>ลองจิจูด</th>
+                        <th style={styles.th}>แก้ไข</th>
+                        <th style={styles.th}>ลบ</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {nodes.map((node) => (
+                        <tr key={node.id} style={styles.row}>
+
+                            <td style={styles.td}>{node.node_id}</td>
+                            <td style={styles.td}>{node.node_name}</td>
+                            <td style={styles.td}>{node.node_latitude}</td>
+                            <td style={styles.td}>{node.node_longitude}</td>
+
+                            <td style={styles.td}>
+                                <button style={styles.editButton}>
+                                    แก้ไข
+                                </button>
+                            </td>
+
+                            <td style={styles.td}>
+                                <button
+                                    style={styles.deleteButton}
+                                    onClick={() => deleteNode(node.id)}
+                                >
+                                    ลบ
+                                </button>
+                            </td>
+
+                        </tr>
+                    ))}
+                </tbody>
+
+            </table>
+
         </div>
     );
+};
+
+const styles = {
+
+    container: {
+        padding: "60px 40px",
+        minHeight: "100vh",
+        backgroundImage: `
+            linear-gradient(
+                rgba(255,255,255,0.35),
+                rgba(255,255,255,0.35)
+            ),
+            url(${bgImage})
+        `,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+    },
+
+    title: {
+        textAlign: "center",
+        marginBottom: "40px",
+        fontSize: "36px",
+        fontWeight: "bold",
+        color: "#1f2937",
+        textShadow: "0px 0px 7px rgb(255,255,255)"
+    },
+
+    buttonBox: {
+        display: "flex",
+        justifyContent: "flex-end",
+        marginBottom: "15px",
+    },
+
+    addButton: {
+        backgroundColor: "#16a34a",
+        color: "white",
+        border: "none",
+        padding: "10px 20px",
+        borderRadius: "8px",
+        cursor: "pointer",
+        fontWeight: "bold",
+        fontSize: "15px",
+    },
+
+    table: {
+        width: "100%",
+        borderCollapse: "collapse",
+        background: "white",
+        fontSize: "18px",
+    },
+
+    th: {
+        padding: "16px 12px",
+        backgroundColor: "#f1f5f9",
+        fontWeight: "bold",
+        textAlign: "center",
+    },
+
+    td: {
+        padding: "16px 12px",
+        textAlign: "center",
+    },
+
+    row: {
+        borderBottom: "1px solid #ddd",
+    },
+
+    editButton: {
+        backgroundColor: "#f59e0b",
+        color: "white",
+        border: "none",
+        padding: "8px 14px",
+        borderRadius: "6px",
+        cursor: "pointer",
+        fontWeight: "bold",
+    },
+
+    deleteButton: {
+        backgroundColor: "#ef4444",
+        color: "white",
+        border: "none",
+        padding: "8px 14px",
+        borderRadius: "6px",
+        cursor: "pointer",
+        fontWeight: "bold",
+    },
 };
 
 export default CrudNode;
