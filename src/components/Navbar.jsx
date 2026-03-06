@@ -11,30 +11,35 @@ function Navbar() {
   const pageTitle =
     isMapPage
       ? "แผนที่จราจร"
-      : "ตารางข้อมูลการจราจร";
+      : isTablePage
+      ? "ตารางข้อมูลการจราจร"
+      : "จัดการโหนดเซนเซอร์";
 
   return (
     <nav style={styles.navbar}>
       <div style={styles.logo}>{pageTitle}</div>
 
       <div>
-        {isMapPage && (
-          <button
-            style={styles.button}
-            onClick={() => navigate("/table")}
-          >
-            ตารางข้อมูล
-          </button>
-        )}
+        <button
+          style={styles.button}
+          onClick={() => navigate("/")}
+        >
+          ดูแผนที่
+        </button>
 
-        {isTablePage && (
-          <button
-            style={styles.button}
-            onClick={() => navigate("/")}
-          >
-            ดูแผนที่
-          </button>
-        )}
+        <button
+          style={styles.button}
+          onClick={() => navigate("/table")}
+        >
+          ตารางข้อมูล
+        </button>
+
+        <button
+          style={styles.button}
+          onClick={() => navigate("/crudnode")}
+        >
+          จัดการโหนด
+        </button>
       </div>
     </nav>
   );
@@ -42,7 +47,7 @@ function Navbar() {
 
 const styles = {
   navbar: {
-    backgroundColor: "#1976D2", // สีฟ้า 
+    backgroundColor: "#1976D2",
     padding: "15px 30px",
     display: "flex",
     justifyContent: "space-between",
@@ -60,7 +65,7 @@ const styles = {
     color: "#1976D2",
     border: "none",
     padding: "8px 16px",
-    marginLeft: "20px",
+    marginLeft: "15px",
     borderRadius: "5px",
     cursor: "pointer",
     fontWeight: "bold",
