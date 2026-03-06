@@ -78,11 +78,11 @@ function History({ showModal, logs, closeModal, getStatusColor, getBatteryColor 
                     </div>
 
                     <button style={styles.searchButton} onClick={handleSearch}>
-                        🔍 ค้นหา
+                        ค้นหา
                     </button>
 
                     <button style={styles.resetButton} onClick={handleReset}>
-                        ↺ รีเซ็ต
+                        รีเซ็ต
                     </button>
                 </div>
 
@@ -242,7 +242,7 @@ const styles = {
     },
 
     searchButton: {
-        backgroundColor: "#2563eb",
+        backgroundColor: "#1976D2",
         color: "white",
         border: "none",
         padding: "9px 20px",

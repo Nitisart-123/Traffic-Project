@@ -10,6 +10,7 @@ function Table() {
     const [logs, setLogs] = useState([]);
     const [logUnsubscribe, setLogUnsubscribe] = useState(null);
     const [searchName, setSearchName] = useState("");
+    const [searchedName, setSearchedName] = useState("");
 
     useEffect(() => {
         const unsubscribe = onSnapshot(
@@ -20,7 +21,6 @@ function Table() {
                     ...doc.data(),
                 }));
 
-                // เรียงใหม่สุดก่อน
                 data.sort((a, b) =>
                     b.node_datetime?.seconds - a.node_datetime?.seconds
                 );
@@ -40,21 +40,19 @@ function Table() {
 
     const getStatusColor = (status) => {
         if (status === "รถติดหยุดนิ่ง" || status === "รถติดมาก")
-            return "#dc2626"; // แดง
+            return "#dc2626";
         if (status === "รถติดน้อย")
-            return "#eab308"; // เหลือง
+            return "#eab308";
         if (status === "รถไหลปกติ")
-            return "#16a34a"; // เขียว
+            return "#16a34a";
     };
 
     const openHistory = (nodeId) => {
-
-        // ปิด listener เก่าก่อนถ้ามี
         if (logUnsubscribe) {
             logUnsubscribe();
         }
 
-        setLogs([]);      // ล้างข้อมูลเก่า
+        setLogs([]);
         setShowModal(true);
 
         const q = query(
@@ -79,7 +77,6 @@ function Table() {
     };
 
     const closeModal = () => {
-
         if (logUnsubscribe) {
             logUnsubscribe();
             setLogUnsubscribe(null);
@@ -89,8 +86,21 @@ function Table() {
         setLogs([]);
     };
 
+    const handleSearch = () => {
+        setSearchedName(searchName);
+    };
+
+    const handleReset = () => {
+        setSearchName("");
+        setSearchedName("");
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === "Enter") handleSearch();
+    };
+
     const filteredNodes = nodes.filter((node) =>
-        node.node_name?.toLowerCase().includes(searchName.toLowerCase())
+        node.node_name?.toLowerCase().includes(searchedName.toLowerCase())
     );
 
     return (
@@ -103,8 +113,17 @@ function Table() {
                     placeholder="ค้นหาชื่อถนน..."
                     value={searchName}
                     onChange={(e) => setSearchName(e.target.value)}
+                    onKeyDown={handleKeyDown}
                     style={styles.searchInput}
                 />
+                <button style={styles.searchButton} onClick={handleSearch}>
+                    ค้นหา
+                </button>
+                {searchedName !== "" && (
+                    <button style={styles.resetButton} onClick={handleReset}>
+                        รีเซ็ต
+                    </button>
+                )}
             </div>
 
             <table style={styles.table}>
@@ -184,6 +203,7 @@ function Table() {
                     )}
                 </tbody>
             </table>
+
             <History
                 showModal={showModal}
                 logs={logs}
@@ -217,14 +237,15 @@ const styles = {
         marginBottom: "40px",
         fontSize: "36px",
         fontWeight: "bold",
-        color: "#1f2937",          // สีตัวอักษร
-        textShadow: "0px 0px 7px rgb(255, 255, 255)"  // เงาเหมือนขอบ
+        color: "#1f2937",
+        textShadow: "0px 0px 7px rgb(255, 255, 255)"
     },
 
-    // เพิ่มสไตล์สำหรับกล่องค้นหา
     searchBox: {
         display: "flex",
         justifyContent: "center",
+        alignItems: "center",
+        gap: "8px",
         marginBottom: "10px",
     },
 
@@ -237,6 +258,28 @@ const styles = {
         outline: "none",
     },
 
+    searchButton: {
+        backgroundColor: "#1976D2",
+        color: "white",
+        border: "none",
+        padding: "10px 20px",
+        borderRadius: "8px",
+        cursor: "pointer",
+        fontWeight: "bold",
+        fontSize: "15px",
+    },
+
+    resetButton: {
+        backgroundColor: "#94a3b8",
+        color: "white",
+        border: "none",
+        padding: "10px 16px",
+        borderRadius: "8px",
+        cursor: "pointer",
+        fontWeight: "bold",
+        fontSize: "15px",
+    },
+
     noData: {
         padding: "30px",
         textAlign: "center",
@@ -245,25 +288,23 @@ const styles = {
         fontWeight: "bold"
     },
 
-    // สไตล์สำหรับตาราง
-
     table: {
         width: "100%",
         borderCollapse: "collapse",
         background: "white",
-        fontSize: "18px",       // ขยายตัวอักษรในตาราง
+        fontSize: "18px",
     },
 
     th: {
         padding: "16px 12px",
         backgroundColor: "#f1f5f9",
         fontWeight: "bold",
-        textAlign: "center",   // 👈 เพิ่ม
+        textAlign: "center",
     },
 
     td: {
         padding: "16px 12px",
-        textAlign: "center",   // 👈 เพิ่ม
+        textAlign: "center",
     },
 
     row: {
@@ -271,7 +312,7 @@ const styles = {
     },
 
     historyButton: {
-        backgroundColor: "#1e3a8a",   // น้ำเงินเข้ม
+        backgroundColor: "#1e3a8a",
         color: "white",
         border: "none",
         padding: "8px 16px",
@@ -279,10 +320,6 @@ const styles = {
         cursor: "pointer",
         fontWeight: "bold",
         transition: "0.2s ease-in-out",
-    },
-
-    historyButtonHover: {
-        backgroundColor: "#1e40af",
     },
 };
 
