@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db } from "../../firebase";
 import bgImage from "../../assets/22959.jpg";
+import CreateNode from "./CreateNode";
 
 const CrudNode = () => {
 
     const [nodes, setNodes] = useState([]);
     const [searchName, setSearchName] = useState("");
     const [searchedName, setSearchedName] = useState("");
+    const [showCreateModal, setShowCreateModal] = useState(false);
 
     const fetchNodes = async () => {
         const querySnapshot = await getDocs(collection(db, "Sensor_Node"));
@@ -83,7 +85,10 @@ const CrudNode = () => {
                     )}
                 </div>
 
-                <button style={styles.addButton}>
+                <button
+                    style={styles.addButton}
+                    onClick={() => setShowCreateModal(true)}
+                >
                     + เพิ่มข้อมูล
                 </button>
 
@@ -138,6 +143,12 @@ const CrudNode = () => {
 
                 </table>
             </div>
+
+            {showCreateModal && (
+                <CreateNode
+                    onClose={() => setShowCreateModal(false)}
+                />
+            )}
 
         </div>
     );
