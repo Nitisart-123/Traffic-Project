@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { collection, addDoc, getDocs, query, where, Timestamp } from "firebase/firestore";
+import { db } from "../../firebase";
 
 const CreateNode = ({ onClose }) => {
 
@@ -6,6 +8,7 @@ const CreateNode = ({ onClose }) => {
     const [nodeName, setNodeName] = useState("");
     const [latitude, setLatitude] = useState("");
     const [longitude, setLongitude] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
 
     const generateNodeId = () => {
         const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -16,6 +19,67 @@ const CreateNode = ({ onClose }) => {
         }
 
         setNodeId(result);
+    };
+
+    const handleSave = async () => {
+
+        setErrorMessage("");
+
+        if (!nodeId || !nodeName || !latitude || !longitude) {
+            setErrorMessage("กรุณากรอกข้อมูลให้ครบ");
+            return;
+        }
+
+        try {
+
+            // 1️⃣ ตรวจสอบรหัสโหนดซ้ำ
+            const q = query(
+                collection(db, "Sensor_Node"),
+                where("node_id", "==", nodeId)
+            );
+
+            const querySnapshot = await getDocs(q);
+
+            if (!querySnapshot.empty) {
+                setErrorMessage("มีรหัสนี้ในระบบแล้ว");
+                return;
+            }
+
+            // 2️⃣ ค่าเริ่มต้น
+            const speed = 0;
+            const countcar = 0;
+            const status = "รถไหลปกติ";
+            const battery = 0;
+
+            // 3️⃣ วันที่เวลาปัจจุบัน
+            const datetime = Timestamp.now();
+
+            // 4️⃣ บันทึกข้อมูล
+            await addDoc(collection(db, "Sensor_Node"), {
+
+                node_id: nodeId,
+                node_name: nodeName,
+                node_latitude: latitude,
+                node_longitude: longitude,
+
+                node_speed: speed,
+                node_countcar: countcar,
+                node_status: status,
+                node_battery: battery,
+
+                node_datetime: datetime
+            });
+
+            alert("บันทึกข้อมูลสำเร็จ");
+
+            onClose();
+
+        } catch (error) {
+
+            console.error(error);
+            setErrorMessage("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+
+        }
     };
 
     return (
@@ -31,8 +95,13 @@ const CreateNode = ({ onClose }) => {
                     </button>
                 </div>
 
-                <div style={styles.body}>
+                {errorMessage && (
+                    <div style={styles.errorText}>
+                        {errorMessage}
+                    </div>
+                )}
 
+                <div style={styles.body}>
                     <label>รหัสโหนด</label>
                     <div style={styles.idBox}>
                         <input
@@ -73,7 +142,7 @@ const CreateNode = ({ onClose }) => {
                 </div>
 
                 <div style={styles.footer}>
-                    <button style={styles.saveButton}>
+                    <button style={styles.saveButton} onClick={handleSave}>
                         บันทึก
                     </button>
 
@@ -174,6 +243,12 @@ const styles = {
         padding: "8px 16px",
         borderRadius: "6px",
         cursor: "pointer",
+    },
+
+    errorText: {
+        color: "red",
+        marginBottom: "10px",
+        fontWeight: "bold"
     },
 };
 
