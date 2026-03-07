@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { collection, addDoc, getDocs, query, where, Timestamp } from "firebase/firestore";
 import { db } from "../../firebase";
 
-const CreateNode = ({ onClose }) => {
+const CreateNode = ({ onClose, onSuccess }) => {
 
     const [nodeId, setNodeId] = useState("");
     const [nodeName, setNodeName] = useState("");
@@ -32,7 +32,6 @@ const CreateNode = ({ onClose }) => {
 
         try {
 
-            // 1️⃣ ตรวจสอบรหัสโหนดซ้ำ
             const q = query(
                 collection(db, "Sensor_Node"),
                 where("node_id", "==", nodeId)
@@ -45,34 +44,20 @@ const CreateNode = ({ onClose }) => {
                 return;
             }
 
-            // 2️⃣ ค่าเริ่มต้น
-            const speed = 0;
-            const countcar = 0;
-            const status = "รถไหลปกติ";
-            const battery = 0;
-
-            // 3️⃣ วันที่เวลาปัจจุบัน
-            const datetime = Timestamp.now();
-
-            // 4️⃣ บันทึกข้อมูล
             await addDoc(collection(db, "Sensor_Node"), {
-
                 node_id: nodeId,
                 node_name: nodeName,
                 node_latitude: latitude,
                 node_longitude: longitude,
-
-                node_speed: speed,
-                node_countcar: countcar,
-                node_status: status,
-                node_battery: battery,
-
-                node_datetime: datetime
+                node_speed: 0,
+                node_countcar: 0,
+                node_status: "รถไหลปกติ",
+                node_battery: 0,
+                node_datetime: Timestamp.now()
             });
 
-            alert("บันทึกข้อมูลสำเร็จ");
-
-            onClose();
+            // แจ้ง CrudNode ให้ดึงข้อมูลใหม่ทันที
+            onSuccess();
 
         } catch (error) {
 
@@ -138,7 +123,6 @@ const CreateNode = ({ onClose }) => {
                         onChange={(e) => setLongitude(e.target.value)}
                         style={styles.input}
                     />
-
                 </div>
 
                 <div style={styles.footer}>

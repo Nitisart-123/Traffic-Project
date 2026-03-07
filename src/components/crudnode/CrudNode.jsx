@@ -125,7 +125,6 @@ const CrudNode = () => {
                         ) : (
                             filteredNodes.map((node) => (
                                 <tr key={node.id} style={styles.row}>
-
                                     <td style={styles.td}>{node.node_id}</td>
                                     <td style={styles.td}>{node.node_name}</td>
                                     <td style={styles.td}>{node.node_latitude}</td>
@@ -146,18 +145,20 @@ const CrudNode = () => {
                                             ลบ
                                         </button>
                                     </td>
-
                                 </tr>
                             ))
                         )}
                     </tbody>
-
                 </table>
             </div>
 
             {showCreateModal && (
                 <CreateNode
                     onClose={() => setShowCreateModal(false)}
+                    onSuccess={() => {
+                        setShowCreateModal(false);
+                        fetchNodes();
+                    }}
                 />
             )}
 
@@ -165,7 +166,10 @@ const CrudNode = () => {
                 <EditNode
                     nodeData={selectedNode}
                     onClose={() => setShowEditModal(false)}
-                    onUpdated={fetchNodes}
+                    onSuccess={() => {
+                        setShowEditModal(false);
+                        fetchNodes();
+                    }}
                 />
             )}
 
