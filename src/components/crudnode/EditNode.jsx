@@ -138,7 +138,7 @@ const styles = {
 
   buttonGroup: {
     display: "flex",
-    justifyContent: "space-between",
+    justifyContent: "end",
     marginTop: "20px"
   },
 
@@ -148,7 +148,8 @@ const styles = {
     border: "none",
     padding: "10px 15px",
     borderRadius: "6px",
-    cursor: "pointer"
+    cursor: "pointer",
+    marginRight: "10px"
   },
 
   cancelButton: {
