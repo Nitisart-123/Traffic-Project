@@ -3,6 +3,7 @@ import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db } from "../../firebase";
 import bgImage from "../../assets/22959.jpg";
 import CreateNode from "./CreateNode";
+import EditNode from "./EditNode";
 
 const CrudNode = () => {
 
@@ -10,6 +11,8 @@ const CrudNode = () => {
     const [searchName, setSearchName] = useState("");
     const [searchedName, setSearchedName] = useState("");
     const [showCreateModal, setShowCreateModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [selectedNode, setSelectedNode] = useState(null);
 
     const fetchNodes = async () => {
         const querySnapshot = await getDocs(collection(db, "Sensor_Node"));
@@ -33,6 +36,11 @@ const CrudNode = () => {
         };
         loadNodes();
     }, []);
+
+    const openEditModal = (node) => {
+        setSelectedNode(node);
+        setShowEditModal(true);
+    };
 
     const deleteNode = async (id) => {
         if (window.confirm("ต้องการลบข้อมูลหรือไม่?")) {
@@ -124,7 +132,10 @@ const CrudNode = () => {
                                     <td style={styles.td}>{node.node_longitude}</td>
 
                                     <td style={styles.actionCell}>
-                                        <button style={styles.editButton}>
+                                        <button
+                                            style={styles.editButton}
+                                            onClick={() => openEditModal(node)}
+                                        >
                                             แก้ไข
                                         </button>
 
@@ -147,6 +158,14 @@ const CrudNode = () => {
             {showCreateModal && (
                 <CreateNode
                     onClose={() => setShowCreateModal(false)}
+                />
+            )}
+
+            {showEditModal && selectedNode && (
+                <EditNode
+                    nodeData={selectedNode}
+                    onClose={() => setShowEditModal(false)}
+                    onUpdated={fetchNodes}
                 />
             )}
 
