@@ -90,56 +90,54 @@ const CrudNode = () => {
             </div>
 
             {/* ตาราง */}
-            <table style={styles.table}>
-
-                <thead>
-                    <tr>
-                        <th style={styles.th}>รหัสโหนด</th>
-                        <th style={styles.th}>ชื่อถนน</th>
-                        <th style={styles.th}>ละติจูด</th>
-                        <th style={styles.th}>ลองจิจูด</th>
-                        <th style={styles.th}>แก้ไข</th>
-                        <th style={styles.th}>ลบ</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {filteredNodes.length === 0 ? (
+            <div style={styles.tableWrapper}>
+                <table style={styles.table}>
+                    <thead>
                         <tr>
-                            <td colSpan="6" style={styles.noData}>
-                                ไม่พบข้อมูลที่ค้นหา
-                            </td>
+                            <th style={styles.th}>รหัสโหนด</th>
+                            <th style={styles.th}>ชื่อถนน</th>
+                            <th style={styles.th}>ละติจูด</th>
+                            <th style={styles.th}>ลองจิจูด</th>
+                            <th style={styles.th}>จัดการ</th>
                         </tr>
-                    ) : (
-                        filteredNodes.map((node) => (
-                            <tr key={node.id} style={styles.row}>
+                    </thead>
 
-                                <td style={styles.td}>{node.node_id}</td>
-                                <td style={styles.td}>{node.node_name}</td>
-                                <td style={styles.td}>{node.node_latitude}</td>
-                                <td style={styles.td}>{node.node_longitude}</td>
-
-                                <td style={styles.td}>
-                                    <button style={styles.editButton}>
-                                        แก้ไข
-                                    </button>
+                    <tbody>
+                        {filteredNodes.length === 0 ? (
+                            <tr>
+                                <td colSpan="5" style={styles.noData}>
+                                    ไม่พบข้อมูลที่ค้นหา
                                 </td>
-
-                                <td style={styles.td}>
-                                    <button
-                                        style={styles.deleteButton}
-                                        onClick={() => deleteNode(node.id)}
-                                    >
-                                        ลบ
-                                    </button>
-                                </td>
-
                             </tr>
-                        ))
-                    )}
-                </tbody>
+                        ) : (
+                            filteredNodes.map((node) => (
+                                <tr key={node.id} style={styles.row}>
 
-            </table>
+                                    <td style={styles.td}>{node.node_id}</td>
+                                    <td style={styles.td}>{node.node_name}</td>
+                                    <td style={styles.td}>{node.node_latitude}</td>
+                                    <td style={styles.td}>{node.node_longitude}</td>
+
+                                    <td style={styles.actionCell}>
+                                        <button style={styles.editButton}>
+                                            แก้ไข
+                                        </button>
+
+                                        <button
+                                            style={styles.deleteButton}
+                                            onClick={() => deleteNode(node.id)}
+                                        >
+                                            ลบ
+                                        </button>
+                                    </td>
+
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+
+                </table>
+            </div>
 
         </div>
     );
@@ -237,11 +235,18 @@ const styles = {
         fontWeight: "bold",
     },
 
+    tableWrapper: {
+        display: "flex",
+        justifyContent: "center",
+    },
+
     table: {
-        width: "100%",
+        width: "80%",
         borderCollapse: "collapse",
         background: "white",
         fontSize: "18px",
+        borderRadius: "10px",
+        overflow: "hidden",
     },
 
     th: {
@@ -278,6 +283,13 @@ const styles = {
         borderRadius: "6px",
         cursor: "pointer",
         fontWeight: "bold",
+    },
+
+    actionCell: {
+        padding: "16px 12px",
+        display: "flex",
+        justifyContent: "center",
+        gap: "10px",
     },
 };
 
