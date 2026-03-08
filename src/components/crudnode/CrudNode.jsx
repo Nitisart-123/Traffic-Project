@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebase";
 import bgImage from "../../assets/22959.jpg";
 import CreateNode from "./CreateNode";
 import EditNode from "./EditNode";
+import DeleteNode from "./DeleteNode";
 
 const CrudNode = () => {
 
@@ -13,6 +14,8 @@ const CrudNode = () => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedNode, setSelectedNode] = useState(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deleteNodeData, setDeleteNodeData] = useState(null);
 
     const fetchNodes = async () => {
         const querySnapshot = await getDocs(collection(db, "Sensor_Node"));
@@ -42,12 +45,12 @@ const CrudNode = () => {
         setShowEditModal(true);
     };
 
-    const deleteNode = async (id) => {
-        if (window.confirm("ต้องการลบข้อมูลหรือไม่?")) {
-            await deleteDoc(doc(db, "Sensor_Node", id));
-            fetchNodes();
-        }
-    };
+    // const deleteNode = async (id) => {
+    //     if (window.confirm("ต้องการลบข้อมูลหรือไม่?")) {
+    //         await deleteDoc(doc(db, "Sensor_Node", id));
+    //         fetchNodes();
+    //     }
+    // };
 
     const handleSearch = () => {
         setSearchedName(searchName);
@@ -65,6 +68,11 @@ const CrudNode = () => {
     const filteredNodes = nodes.filter((node) =>
         node.node_name?.toLowerCase().includes(searchedName.toLowerCase())
     );
+
+    const openDeleteModal = (node) => {
+        setDeleteNodeData(node);
+        setShowDeleteModal(true);
+    };
 
     return (
         <div style={styles.container}>
@@ -140,7 +148,7 @@ const CrudNode = () => {
 
                                         <button
                                             style={styles.deleteButton}
-                                            onClick={() => deleteNode(node.id)}
+                                            onClick={() => openDeleteModal(node)}
                                         >
                                             ลบ
                                         </button>
@@ -173,6 +181,16 @@ const CrudNode = () => {
                 />
             )}
 
+            {showDeleteModal && deleteNodeData && (
+                <DeleteNode
+                    nodeData={deleteNodeData}
+                    onClose={() => setShowDeleteModal(false)}
+                    onSuccess={() => {
+                        setShowDeleteModal(false);
+                        fetchNodes();
+                    }}
+                />
+            )}
         </div>
     );
 };
