@@ -43,7 +43,7 @@ const DeleteNode = ({ nodeData, onClose, onSuccess }) => {
                 <h2 style={styles.title}>{nodeData.node_name}หรือไม่?</h2>
 
                 <p style={styles.warning}>
-                    ประวัติข้อมูลย้อนหลังจะถูกลบด้วย
+                    ประวัติข้อมูลย้อนหลังจะถูกลบด้วย!
                 </p>
 
                 <div style={styles.buttonGroup}>

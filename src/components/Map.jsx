@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  GoogleMap,
-  Marker,
-  InfoWindow,
-  useLoadScript,
-} from "@react-google-maps/api";
+import { GoogleMap, Marker, InfoWindow, useLoadScript, } from "@react-google-maps/api";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
 
@@ -18,6 +13,7 @@ function Map() {
   const [nodes, setNodes] = useState([]);
   const [center, setCenter] = useState(null);
   const [selectedNode, setSelectedNode] = useState(null);
+  const [searchText, setSearchText] = useState("");
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -59,6 +55,26 @@ function Map() {
 
   if (!isLoaded || !center) return null;
 
+  const handleSearch = () => {
+
+    const foundNode = nodes.find((node) =>
+      node.node_name?.toLowerCase().includes(searchText.toLowerCase())
+    );
+
+    if (!foundNode) {
+      alert("ไม่พบโหนดที่ค้นหา");
+      return;
+    }
+
+    const lat = parseFloat(foundNode.node_latitude);
+    const lng = parseFloat(foundNode.node_longitude);
+
+    if (!isNaN(lat) && !isNaN(lng)) {
+      setCenter({ lat, lng });
+      setSelectedNode(foundNode);
+    }
+  };
+
   return (
     <GoogleMap
       mapContainerStyle={{ width: "100vw", height: "100vh" }}
@@ -73,6 +89,24 @@ function Map() {
         zoomControl: false,
       }}
     >
+      {/* 🔎 SEARCH BOX */}
+      <div style={styles.searchBox}>
+        <input
+          type="text"
+          placeholder="ค้นหาชื่อโหนด..."
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          style={styles.searchInput}
+        />
+
+        <button
+          onClick={handleSearch}
+          style={styles.searchButton}
+        >
+          ค้นหา
+        </button>
+      </div>
+
       {/* ---------- MARKER ---------- */}
       {nodes.map((node) => {
         const lat = parseFloat(node.node_latitude);
@@ -179,6 +213,36 @@ function Map() {
 }
 
 const styles = {
+
+  // ค้นหาพิกัด
+  searchBox: {
+    position: "absolute",
+    top: "20px",
+    left: "50%",
+    transform: "translateX(-50%)",
+    zIndex: 10,
+    display: "flex",
+    gap: "10px",
+  },
+
+  searchInput: {
+    padding: "10px 15px",
+    fontSize: "16px",
+    borderRadius: "8px",
+    border: "1px solid #ccc",
+    width: "250px",
+  },
+
+  searchButton: {
+    padding: "10px 18px",
+    border: "none",
+    backgroundColor: "#2563eb",
+    color: "white",
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontWeight: "bold",
+  },
+
   card: {
     background: "#f3f3f3",
     padding: "10px 40px",   // เดิม 40px 50px
