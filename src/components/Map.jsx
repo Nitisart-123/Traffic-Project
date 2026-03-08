@@ -11,7 +11,6 @@ function Map() {
   });
 
   const mapRef = useRef(null);
-  const searchRef = useRef(null);
 
   const [nodes, setNodes] = useState([]);
   const [center, setCenter] = useState(null);
@@ -56,18 +55,8 @@ function Map() {
     return () => unsubscribe();
   }, []);
 
-  // ปิด dropdown เมื่อคลิกนอก search box
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (searchRef.current && !searchRef.current.contains(e.target)) {
-        setShowSuggestions(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
-  // กรอง suggestions จากชื่อที่พิมพ์
+
   const suggestions = searchText.trim()
     ? nodes.filter((node) =>
         node.node_name?.toLowerCase().includes(searchText.trim().toLowerCase())
@@ -114,6 +103,7 @@ function Map() {
   };
 
   const hasDropdown = showSuggestions && suggestions.length > 0;
+  const hasError = showSuggestions && searchText.trim() && suggestions.length === 0 && searchError;
 
   if (!isLoaded || !center) return null;
 
@@ -121,23 +111,31 @@ function Map() {
     <div style={{ position: "relative" }}>
 
       {/* ===== Search Box ===== */}
-      <div style={styles.searchContainer} ref={searchRef}>
+      <div style={styles.searchContainer}>
         <div style={{
           ...styles.searchBox,
-          borderRadius: hasDropdown ? "12px 12px 0 0" : "12px",
+          borderRadius: (hasDropdown || hasError) ? "12px 12px 0 0" : "12px",
         }}>
-          <span style={styles.searchIcon}>🔍</span>
           <input
             type="text"
             placeholder="ค้นหาชื่อถนน..."
             value={searchText}
             onChange={(e) => {
-              setSearchText(e.target.value);
-              setSearchError("");
+              const val = e.target.value;
+              setSearchText(val);
               setShowSuggestions(true);
+              if (val.trim()) {
+                const found = nodes.some((node) =>
+                  node.node_name?.toLowerCase().includes(val.trim().toLowerCase())
+                );
+                setSearchError(found ? "" : "ไม่พบชื่อที่ค้นหา");
+              } else {
+                setSearchError("");
+              }
             }}
             onFocus={() => setShowSuggestions(true)}
             onKeyDown={handleKeyDown}
+            onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
             style={styles.searchInput}
           />
           {searchText && (
@@ -152,10 +150,6 @@ function Map() {
               ✕
             </button>
           )}
-          <div style={styles.divider} />
-          <button style={styles.searchButton} onClick={handleSearch}>
-            ค้นหา
-          </button>
         </div>
 
         {/* Dropdown Suggestions */}
@@ -167,9 +161,8 @@ function Map() {
                 style={styles.suggestionItem}
                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f1f5f9"}
                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "white"}
-                onMouseDown={() => goToNode(node)}
+                onClick={() => goToNode(node)}
               >
-                <span style={styles.suggestionIcon}>🔍</span>
                 <span style={styles.suggestionText}>{node.node_name}</span>
                 <span style={{
                   ...styles.suggestionDot,
@@ -180,8 +173,8 @@ function Map() {
           </div>
         )}
 
-        {searchError && (
-          <div style={styles.errorText}>{searchError}</div>
+        {hasError && (
+          <div style={styles.dropdownError}>ไม่พบชื่อที่ค้นหา</div>
         )}
       </div>
 
@@ -272,7 +265,6 @@ function Map() {
 }
 
 const styles = {
-  // ===== Search =====
   searchContainer: {
     position: "absolute",
     top: "16px",
@@ -293,11 +285,6 @@ const styles = {
     boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
   },
 
-  searchIcon: {
-    fontSize: "16px",
-    color: "#64748b",
-    flexShrink: 0,
-  },
 
   searchInput: {
     flex: 1,
@@ -319,24 +306,6 @@ const styles = {
     flexShrink: 0,
   },
 
-  divider: {
-    width: "1px",
-    height: "22px",
-    backgroundColor: "#cbd5e1",
-    flexShrink: 0,
-  },
-
-  searchButton: {
-    backgroundColor: "#2563eb",
-    color: "white",
-    border: "none",
-    padding: "7px 16px",
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontWeight: "bold",
-    fontSize: "15px",
-    flexShrink: 0,
-  },
 
   dropdown: {
     backgroundColor: "white",
@@ -375,19 +344,18 @@ const styles = {
     flexShrink: 0,
   },
 
-  errorText: {
+  dropdownError: {
     backgroundColor: "white",
+    borderTop: "1px solid #e2e8f0",
+    borderRadius: "0 0 12px 12px",
+    boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
+    padding: "14px 16px",
     color: "#dc2626",
     fontWeight: "bold",
-    fontSize: "14px",
-    padding: "6px 14px",
-    borderRadius: "8px",
-    marginTop: "6px",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+    fontSize: "15px",
     textAlign: "center",
   },
 
-  // ===== Card =====
   card: {
     background: "#f3f3f3",
     padding: "10px 40px",
