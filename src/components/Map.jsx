@@ -246,7 +246,7 @@ function Map() {
                 <div style={styles.dataRow}>
                   <div style={styles.label}>
                     <p>ความเร็วเฉลี่ย</p>
-                    <p>จำนวนยานพาหนะ</p>
+                    <p>จำนวนรถ</p>
                     <p>สถานะการจราจร</p>
                   </div>
                   <div style={styles.value}>
