@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import { useNavigate } from "react-router-dom";
-
+import bgImage from "../assets/22959.jpg";
 
 const Login = ({ onLogin }) => {
 
@@ -48,7 +48,7 @@ const Login = ({ onLogin }) => {
     return (
         <div style={styles.container}>
             <div style={styles.box}>
-                <h2>เข้าสู่ระบบ</h2>
+                <h2 style={styles.h2}>เข้าสู่ระบบ</h2>
 
                 {error && <p style={styles.error}>{error}</p>}
 
@@ -81,25 +81,46 @@ const styles = {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+
+        backgroundImage: `
+      linear-gradient(rgba(255,255,255,0.4), rgba(255,255,255,0.4)),
+      url(${bgImage})
+    `,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
     },
     box: {
-        width: "300px",
-        padding: "20px",
+        width: "380px",
+        padding: "30px",
         background: "white",
-        borderRadius: "10px",
-        boxShadow: "0 0 10px rgba(0,0,0,0.2)",
+        borderRadius: "15px",
+        boxShadow: "0 0 20px rgba(0,0,0,0.2)",
     },
+
     input: {
         width: "100%",
-        marginBottom: "10px",
-        padding: "8px",
+        marginBottom: "15px",
+        padding: "12px",
+        fontSize: "16px",   // 👈 เพิ่ม
+        borderRadius: "8px",
+        border: "1px solid #ccc",
     },
+
     button: {
         width: "100%",
-        padding: "10px",
+        padding: "12px",
+        fontSize: "18px",   // 👈 เพิ่ม
         background: "#2563eb",
         color: "white",
         border: "none",
+        borderRadius: "8px",
+        fontWeight: "bold",
+    },
+
+    h2: {
+        fontSize: "26px",   // 👈 เพิ่ม
+        marginBottom: "15px",
+        textAlign: "center",
     },
     error: {
         color: "red"

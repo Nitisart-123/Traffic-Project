@@ -6,6 +6,7 @@ function Navbar({ user, setUser }) {
   const location = useLocation();
 
   const isMapPage = location.pathname === "/";
+  const isLoginPage = location.pathname === "/login";
   const isTablePage = location.pathname === "/table";
 
   const handleLogout = () => {
@@ -14,54 +15,80 @@ function Navbar({ user, setUser }) {
     navigate("/"); // 👈 กลับหน้า map
   };
 
-  const pageTitle =
-    isMapPage
-      ? "แผนที่จราจร"
-      : isTablePage
-        ? "ตารางข้อมูลการจราจร"
-        : "จัดการโหนดเซนเซอร์";
+  const pageTitle = user
+    ? (
+      isMapPage
+        ? "แผนที่จราจร"
+        : isTablePage
+          ? "ตารางข้อมูลการจราจร"
+          : "จัดการโหนดเซนเซอร์"
+    )
+    : (
+      isMapPage
+        ? "แผนที่จราจร"   // 👈 ยังไม่ login แต่เป็นหน้า map
+        : "เข้าสู่ระบบ"
+    );
 
   return (
     <nav style={styles.navbar}>
       <div style={styles.logo}>{pageTitle}</div>
 
       <div>
-        <button
-          style={styles.button}
-          onClick={() => navigate("/")}
-        >
-          ดูแผนที่
-        </button>
-
-        <button
-          style={styles.button}
-          onClick={() => navigate("/table")}
-        >
-          ตารางข้อมูล
-        </button>
-
-        <button
-          style={styles.button}
-          onClick={() => navigate("/crudnode")}
-        >
-          จัดการโหนด
-        </button>
 
         {user ? (
-          <button 
-          style={styles.button}
-          onClick={handleLogout}
-          >
-            Logout
-          </button>
+          <>
+            <button
+              style={styles.button}
+              onClick={() => navigate("/")}
+            >
+              ดูแผนที่
+            </button>
+
+            <button
+              style={styles.button}
+              onClick={() => navigate("/table")}
+            >
+              ตารางข้อมูล
+            </button>
+
+            <button
+              style={styles.button}
+              onClick={() => navigate("/crudnode")}
+            >
+              จัดการโหนด
+            </button>
+
+            <button
+              style={styles.button}
+              onClick={handleLogout}
+            >
+              ออกจากระบบ
+            </button>
+          </>
         ) : (
-          <button 
-          style={styles.button}
-          onClick={() => navigate("/login")}
-          >
-            Login
-          </button>
+          <>
+            {/* แสดงดูแผนที่เฉพาะตอนที่ไม่ใช่หน้า map */}
+            {!isMapPage && (
+              <button
+                style={styles.button}
+                onClick={() => navigate("/")}
+              >
+                ดูแผนที่
+              </button>
+            )}
+
+            {/* ❌ ถ้าอยู่หน้า login → ไม่ต้องแสดงปุ่ม login */}
+            {!isLoginPage && (
+              <button
+                style={styles.button}
+                onClick={() => navigate("/login")}
+              >
+                เข้าสู่ระบบ
+              </button>
+            )}
+          </>
         )}
+
       </div>
     </nav>
   );
