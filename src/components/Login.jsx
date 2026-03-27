@@ -90,8 +90,9 @@ const styles = {
         backgroundPosition: "center",
     },
     box: {
-        width: "380px",
+        width: "580px",
         padding: "30px",
+        marginBottom: "100px",
         background: "white",
         borderRadius: "15px",
         boxShadow: "0 0 20px rgba(0,0,0,0.2)",
@@ -99,17 +100,18 @@ const styles = {
 
     input: {
         width: "100%",
-        marginBottom: "15px",
-        padding: "12px",
-        fontSize: "16px",   // 👈 เพิ่ม
+        marginBottom: "20px",
+        padding: "16px",
+        fontSize: "20px",   // 👈 เพิ่ม
         borderRadius: "8px",
         border: "1px solid #ccc",
+        boxSizing: "border-box",   // 👈 เพิ่มบรรทัดนี้
     },
 
     button: {
         width: "100%",
-        padding: "12px",
-        fontSize: "18px",   // 👈 เพิ่ม
+        padding: "16px",
+        fontSize: "20px",   // 👈 เพิ่ม
         background: "#2563eb",
         color: "white",
         border: "none",
@@ -118,7 +120,8 @@ const styles = {
     },
 
     h2: {
-        fontSize: "26px",   // 👈 เพิ่ม
+        fontSize: "40px",   // 👈 เพิ่ม
+        marginTop: "0px",
         marginBottom: "15px",
         textAlign: "center",
     },
