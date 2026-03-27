@@ -1,19 +1,25 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
-function Navbar() {
+function Navbar({ user, setUser }) {
   const navigate = useNavigate();
   const location = useLocation();
 
   const isMapPage = location.pathname === "/";
   const isTablePage = location.pathname === "/table";
 
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setUser(null);
+    navigate("/"); // 👈 กลับหน้า map
+  };
+
   const pageTitle =
     isMapPage
       ? "แผนที่จราจร"
       : isTablePage
-      ? "ตารางข้อมูลการจราจร"
-      : "จัดการโหนดเซนเซอร์";
+        ? "ตารางข้อมูลการจราจร"
+        : "จัดการโหนดเซนเซอร์";
 
   return (
     <nav style={styles.navbar}>
@@ -40,6 +46,22 @@ function Navbar() {
         >
           จัดการโหนด
         </button>
+
+        {user ? (
+          <button 
+          style={styles.button}
+          onClick={handleLogout}
+          >
+            Logout
+          </button>
+        ) : (
+          <button 
+          style={styles.button}
+          onClick={() => navigate("/login")}
+          >
+            Login
+          </button>
+        )}
       </div>
     </nav>
   );
