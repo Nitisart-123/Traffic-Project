@@ -1,9 +1,23 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 function Navbar({ user, setUser }) {
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef();
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setShowMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const isMapPage = location.pathname === "/";
   const isLoginPage = location.pathname === "/login";
@@ -12,7 +26,7 @@ function Navbar({ user, setUser }) {
   const handleLogout = () => {
     localStorage.removeItem("user");
     setUser(null);
-    navigate("/"); // 👈 กลับหน้า map
+    navigate("/");
   };
 
   const pageTitle = user
@@ -25,7 +39,7 @@ function Navbar({ user, setUser }) {
     )
     : (
       isMapPage
-        ? "แผนที่จราจร"   // 👈 ยังไม่ login แต่เป็นหน้า map
+        ? "แผนที่จราจร"
         : "เข้าสู่ระบบ"
     );
 
@@ -33,56 +47,57 @@ function Navbar({ user, setUser }) {
     <nav style={styles.navbar}>
       <div style={styles.logo}>{pageTitle}</div>
 
-      <div>
+      <div style={{ display: "flex", alignItems: "center" }}>
 
         {user ? (
           <>
-            <button
-              style={styles.button}
-              onClick={() => navigate("/")}
-            >
+            <button style={styles.button} onClick={() => navigate("/")}>
               ดูแผนที่
             </button>
 
-            <button
-              style={styles.button}
-              onClick={() => navigate("/table")}
-            >
+            <button style={styles.button} onClick={() => navigate("/table")}>
               ตารางข้อมูล
             </button>
 
-            <button
-              style={styles.button}
-              onClick={() => navigate("/crudnode")}
-            >
+            <button style={styles.button} onClick={() => navigate("/crudnode")}>
               จัดการโหนด
             </button>
 
-            <button
-              style={styles.button}
-              onClick={handleLogout}
-            >
-              ออกจากระบบ
-            </button>
+            {/* ACCOUNT BUTTON — อยู่ขวาสุด */}
+            <div style={{ position: "relative", marginLeft: "15px" }} ref={menuRef}>
+              <button
+                style={styles.buttonIcon}
+                onClick={() => setShowMenu(!showMenu)}
+              >
+                ☰
+              </button>
+
+              {showMenu && (
+                <div style={styles.dropdown}>
+                  <div style={styles.profileBox}>
+                    <span style={styles.userText}>{user.mem_rank}</span>
+                    <span style={styles.userText}>{user.mem_name}</span>
+                  </div>
+
+                  <hr />
+
+                  <button style={styles.logoutBtn} onClick={handleLogout}>
+                    ออกจากระบบ
+                  </button>
+                </div>
+              )}
+            </div>
           </>
         ) : (
           <>
-            {/* แสดงดูแผนที่เฉพาะตอนที่ไม่ใช่หน้า map */}
             {!isMapPage && (
-              <button
-                style={styles.button}
-                onClick={() => navigate("/")}
-              >
+              <button style={styles.button} onClick={() => navigate("/")}>
                 ดูแผนที่
               </button>
             )}
 
-            {/* ❌ ถ้าอยู่หน้า login → ไม่ต้องแสดงปุ่ม login */}
             {!isLoginPage && (
-              <button
-                style={styles.button}
-                onClick={() => navigate("/login")}
-              >
+              <button style={styles.button} onClick={() => navigate("/login")}>
                 เข้าสู่ระบบ
               </button>
             )}
@@ -118,6 +133,54 @@ const styles = {
     borderRadius: "5px",
     cursor: "pointer",
     fontWeight: "bold",
+  },
+
+  // ไม่มีพื้นหลัง ไม่มี border สีขาว
+  buttonIcon: {
+    backgroundColor: "transparent",
+    color: "white",
+    border: "none",
+    padding: "0px",
+    cursor: "pointer",
+    fontWeight: "bold",
+    fontSize: "40px",
+    lineHeight: 1,
+  },
+
+  dropdown: {
+    position: "absolute",
+    top: "56px",
+    right: "0",
+    background: "white",
+    borderRadius: "12px",
+    boxShadow: "0 8px 20px rgba(0,0,0,0.25)",
+    padding: "12px",
+    minWidth: "200px",
+    zIndex: 100,
+  },
+
+  logoutBtn: {
+    width: "100%",
+    padding: "8px",
+    background: "#ef4444",
+    color: "white",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+    marginTop: "5px",
+  },
+
+  profileBox: {
+    display: "flex",
+    minWidth: "210px",
+    alignItems: "center",
+    gap: "8px",
+    marginBottom: "8px",
+  },
+
+  userText: {
+    fontWeight: "bold",
+    color: "#333",
   },
 };
 
