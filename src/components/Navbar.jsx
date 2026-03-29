@@ -174,7 +174,6 @@ const styles = {
     display: "flex",
     minWidth: "210px",
     alignItems: "center",
-    gap: "8px",
     marginBottom: "8px",
   },
 

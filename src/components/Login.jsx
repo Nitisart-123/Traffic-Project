@@ -42,11 +42,16 @@ const Login = ({ onLogin }) => {
 
         onLogin(userData);
 
-        navigate("/crudnode"); // ✅ ใส่ตรงนี้
+        navigate("/"); // ✅ ใส่ตรงนี้
     };
 
     return (
         <div style={styles.container}>
+            {/* 🔥 HEADER */}
+            <h1 style={styles.header}>
+                ระบบตรวจจับและวิเคราะห์การจราจรติดขัด
+            </h1>
+
             <div style={styles.box}>
                 <h2 style={styles.h2}>เข้าสู่ระบบ</h2>
 
@@ -89,10 +94,21 @@ const styles = {
         backgroundSize: "cover",
         backgroundPosition: "center",
     },
+
+    header: {
+        position: "absolute",   // 🔥 ลอยด้านบน
+        top: "100px",
+        fontSize: "50px",
+        fontWeight: "bold",
+        color: "#1f2937",
+        textAlign: "center",
+        textShadow: "0px 0px 7px rgb(255, 255, 255)"
+    },
+
     box: {
         width: "580px",
         padding: "30px",
-        marginBottom: "100px",
+        marginBottom: "80px",
         background: "white",
         borderRadius: "15px",
         boxShadow: "0 0 20px rgba(0,0,0,0.2)",
