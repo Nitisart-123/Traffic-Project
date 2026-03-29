@@ -70,7 +70,7 @@ const CrudNode = () => {
     return (
         <div style={styles.container}>
 
-            <h1 style={styles.title}>จัดการโหนดเซนเซอร์</h1>
+            <h1 style={styles.title}>จัดการข้อมูลโหนดเซนเซอร์</h1>
 
             {/* ค้นหา + ปุ่มเพิ่ม */}
             <div style={styles.topBar}>
