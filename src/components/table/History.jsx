@@ -205,7 +205,8 @@ const styles = {
 
     modalTitle: {
         margin: 0,
-        fontSize: "20px",
+        fontFamily: "'Prompt', sans-serif",
+        fontSize: "25px",
         fontWeight: "bold",
     },
 

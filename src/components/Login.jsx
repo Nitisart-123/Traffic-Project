@@ -82,11 +82,11 @@ const Login = ({ onLogin }) => {
 
 const styles = {
     container: {
+        fontFamily: "'Prompt', sans-serif",  // 🔥 ใส่ตรงนี้
         height: "100vh",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-
         backgroundImage: `
       linear-gradient(rgba(255,255,255,0.4), rgba(255,255,255,0.4)),
       url(${bgImage})
@@ -99,7 +99,7 @@ const styles = {
         position: "absolute",   // 🔥 ลอยด้านบน
         top: "100px",
         fontSize: "50px",
-        fontWeight: "bold",
+        fontWeight: "700",
         color: "#1f2937",
         textAlign: "center",
         textShadow: "0px 0px 7px rgb(255, 255, 255)"
@@ -132,13 +132,12 @@ const styles = {
         color: "white",
         border: "none",
         borderRadius: "8px",
-        fontWeight: "bold",
     },
 
     h2: {
         fontSize: "40px",   // 👈 เพิ่ม
         marginTop: "0px",
-        marginBottom: "15px",
+        marginBottom: "25px",
         textAlign: "center",
     },
     error: {

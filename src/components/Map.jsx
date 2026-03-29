@@ -401,6 +401,7 @@ const styles = {
   },
 
   nodeName: {
+    fontFamily: "'Prompt', sans-serif",  // 🔥 ใส่ตรงนี้
     fontSize: "42px",
     fontWeight: "bold",
     textAlign: "center",

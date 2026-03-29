@@ -32,14 +32,14 @@ function Navbar({ user, setUser }) {
   const pageTitle = user
     ? (
       isMapPage
-        ? "แผนที่จราจร"
+        ? "แผนที่การจราจร"
         : isTablePage
           ? "ตารางข้อมูลการจราจร"
           : "จัดการโหนดเซนเซอร์"
     )
     : (
       isMapPage
-        ? "แผนที่จราจร"
+        ? "แผนที่การจราจร"
         : "เข้าสู่ระบบ"
     );
 
@@ -112,7 +112,7 @@ function Navbar({ user, setUser }) {
 const styles = {
   navbar: {
     backgroundColor: "#1976D2",
-    padding: "15px 30px",
+    padding: "10px 30px",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
@@ -120,6 +120,7 @@ const styles = {
   },
 
   logo: {
+    fontFamily: "'Prompt', sans-serif",  // 🔥 ใส่ตรงนี้
     fontSize: "20px",
     fontWeight: "bold",
   },
@@ -132,18 +133,17 @@ const styles = {
     marginLeft: "15px",
     borderRadius: "5px",
     cursor: "pointer",
+    fontFamily: "'Prompt', sans-serif",  // 🔥 ใส่ตรงนี้
     fontWeight: "bold",
   },
 
-  // ไม่มีพื้นหลัง ไม่มี border สีขาว
   buttonIcon: {
     backgroundColor: "transparent",
     color: "white",
     border: "none",
     padding: "0px",
     cursor: "pointer",
-    fontWeight: "bold",
-    fontSize: "40px",
+    fontSize: "45px",
     lineHeight: 1,
   },
 
@@ -163,6 +163,7 @@ const styles = {
     width: "100%",
     padding: "8px",
     background: "#ef4444",
+    fontFamily: "'Prompt', sans-serif",  // 🔥 ใส่ตรงนี้
     color: "white",
     border: "none",
     borderRadius: "6px",

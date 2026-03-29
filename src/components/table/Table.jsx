@@ -233,9 +233,10 @@ const styles = {
     },
 
     title: {
+        fontFamily: "'Prompt', sans-serif",
         textAlign: "center",
         marginBottom: "40px",
-        fontSize: "36px",
+        fontSize: "50px",
         fontWeight: "bold",
         color: "#1f2937",
         textShadow: "0px 0px 7px rgb(255, 255, 255)"
