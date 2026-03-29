@@ -24,6 +24,7 @@ function Navbar({ user, setUser }) {
   const isTablePage = location.pathname === "/table";
 
   const handleLogout = () => {
+    setShowMenu(false);
     localStorage.removeItem("user");
     setUser(null);
     navigate("/");
@@ -120,11 +121,13 @@ const styles = {
   },
 
   logo: {
-    fontSize: "20px",
+    fontFamily: "'Prompt', sans-serif",
+    fontSize: "25px",
     fontWeight: "bold",
   },
 
   button: {
+    fontFamily: "'Prompt', sans-serif",
     backgroundColor: "white",
     color: "#1976D2",
     border: "none",
@@ -149,8 +152,8 @@ const styles = {
 
   dropdown: {
     position: "absolute",
-    top: "50px",
-    right: "20px",
+    top: "48px",
+    right: "17px",
     background: "white",
     borderRadius: "12px 0 12px 12px",
     boxShadow: "0 8px 20px rgba(0,0,0,0.25)",
@@ -160,6 +163,7 @@ const styles = {
   },
 
   logoutBtn: {
+    fontFamily: "'Prompt', sans-serif",
     width: "100%",
     padding: "8px",
     background: "#ef4444",
@@ -173,7 +177,6 @@ const styles = {
   profileBox: {
     display: "flex",
     alignItems: "center",
-    gap: "8px",
     marginBottom: "8px",
     paddingBottom: "8px",
     borderBottom: "1px solid #e5e7eb",
@@ -187,7 +190,7 @@ const styles = {
 
   triangle: {
     position: "absolute",
-    top: "-8px",
+    top: "-7px",
     right: "0px",
     width: 0,
     height: 0,

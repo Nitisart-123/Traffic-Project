@@ -45,13 +45,6 @@ const CrudNode = () => {
         setShowEditModal(true);
     };
 
-    // const deleteNode = async (id) => {
-    //     if (window.confirm("ต้องการลบข้อมูลหรือไม่?")) {
-    //         await deleteDoc(doc(db, "Sensor_Node", id));
-    //         fetchNodes();
-    //     }
-    // };
-
     const handleSearch = () => {
         setSearchedName(searchName);
     };
@@ -77,7 +70,7 @@ const CrudNode = () => {
     return (
         <div style={styles.container}>
 
-            <h1 style={styles.title}>ระบบจัดการโหนดเซนเซอร์</h1>
+            <h1 style={styles.title}>จัดการโหนดเซนเซอร์</h1>
 
             {/* ค้นหา + ปุ่มเพิ่ม */}
             <div style={styles.topBar}>
@@ -214,9 +207,10 @@ const styles = {
     },
 
     title: {
+        fontFamily: "'Prompt', sans-serif",
         textAlign: "center",
         marginBottom: "40px",
-        fontSize: "36px",
+        fontSize: "50px",
         fontWeight: "bold",
         color: "#1f2937",
         textShadow: "0px 0px 7px rgb(255,255,255)"
@@ -247,7 +241,7 @@ const styles = {
     },
 
     searchButton: {
-        backgroundColor: "#2563eb",
+        backgroundColor: "#1976D2",
         color: "white",
         border: "none",
         padding: "10px 18px",

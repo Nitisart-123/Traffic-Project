@@ -39,11 +39,10 @@ const DeleteNode = ({ nodeData, onClose, onSuccess }) => {
 
             <div style={styles.modal}>
 
-                <h2 style={styles.title}>คุณต้องการลบโหนดเซนเซอร์</h2>
-                <h2 style={styles.title}>{nodeData.node_name}หรือไม่?</h2>
+                <h2 style={styles.title}>คุณต้องการลบข้อมูลโหนดเซนเซอร์{nodeData.node_name}หรือไม่?</h2>
 
                 <p style={styles.warning}>
-                    ประวัติข้อมูลย้อนหลังจะถูกลบด้วย!
+                    ประวัติข้อมูลย้อนหลังจะถูกลบ!
                 </p>
 
                 <div style={styles.buttonGroup}>
@@ -91,6 +90,7 @@ const styles = {
     },
 
     title: {
+        fontFamily: "'Prompt', sans-serif",
         marginBottom: "0px",
         marginTop: "0px",
         fontSize: "27px",

@@ -165,6 +165,7 @@ const styles = {
     },
 
     header: {
+        fontFamily: "'Prompt', sans-serif",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",

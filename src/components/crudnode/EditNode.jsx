@@ -9,9 +9,7 @@ const EditNode = ({ nodeData, onClose, onSuccess }) => {
     const [longitude, setLongitude] = useState(nodeData?.node_longitude || "");
 
     const handleUpdate = async () => {
-
         try {
-
             const nodeRef = doc(db, "Sensor_Node", nodeData.id);
 
             await updateDoc(nodeRef, {
@@ -20,24 +18,21 @@ const EditNode = ({ nodeData, onClose, onSuccess }) => {
                 node_longitude: longitude
             });
 
-            // แจ้ง CrudNode ให้ดึงข้อมูลใหม่ทันที
             onSuccess();
-
         } catch (error) {
             console.error("Update Error:", error);
         }
-
     };
 
     return (
-
         <div style={styles.overlay}>
-
             <div style={styles.modal}>
 
-                <h2 style={styles.title}>
-                    แก้ไขข้อมูลโหนดเซนเซอร์
-                </h2>
+                {/* Header */}
+                <div style={styles.header}>
+                    <h2 style={styles.title}>แก้ไขข้อมูลโหนดเซนเซอร์</h2>
+                    <button style={styles.closeButton} onClick={onClose}>✕</button>
+                </div>
 
                 <label style={styles.label}>ชื่อโหนด</label>
                 <input
@@ -71,9 +66,7 @@ const EditNode = ({ nodeData, onClose, onSuccess }) => {
                 </div>
 
             </div>
-
         </div>
-
     );
 };
 
@@ -89,7 +82,7 @@ const styles = {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        zIndex: 1000
+        zIndex: 1000,
     },
 
     modal: {
@@ -99,30 +92,48 @@ const styles = {
         width: "350px",
         boxShadow: "0 5px 20px rgba(0,0,0,0.2)",
         display: "flex",
-        flexDirection: "column"
+        flexDirection: "column",
+    },
+
+    header: {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: "20px",
     },
 
     title: {
-        textAlign: "center",
-        marginBottom: "20px"
+        fontFamily: "'Prompt', sans-serif",
+        margin: 0,
+        textAlign: "left",
+    },
+
+    closeButton: {
+        background: "transparent",
+        border: "none",
+        fontSize: "20px",
+        cursor: "pointer",
+        color: "#64748b",
+        lineHeight: 1,
+        padding: "0 4px",
     },
 
     label: {
         marginTop: "10px",
         marginBottom: "5px",
-        fontWeight: "bold"
+        fontWeight: "bold",
     },
 
     input: {
         padding: "8px",
         borderRadius: "5px",
-        border: "1px solid #ccc"
+        border: "1px solid #ccc",
     },
 
     buttonGroup: {
         display: "flex",
         justifyContent: "end",
-        marginTop: "20px"
+        marginTop: "20px",
     },
 
     saveButton: {
@@ -132,7 +143,7 @@ const styles = {
         padding: "10px 15px",
         borderRadius: "6px",
         cursor: "pointer",
-        marginRight: "10px"
+        marginRight: "10px",
     },
 
     cancelButton: {
@@ -141,9 +152,8 @@ const styles = {
         border: "none",
         padding: "10px 15px",
         borderRadius: "6px",
-        cursor: "pointer"
-    }
-
+        cursor: "pointer",
+    },
 };
 
 export default EditNode;
