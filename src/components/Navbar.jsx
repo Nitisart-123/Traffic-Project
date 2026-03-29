@@ -32,14 +32,14 @@ function Navbar({ user, setUser }) {
   const pageTitle = user
     ? (
       isMapPage
-        ? "แผนที่การจราจร"
+        ? "แผนที่จราจร"
         : isTablePage
           ? "ตารางข้อมูลการจราจร"
           : "จัดการโหนดเซนเซอร์"
     )
     : (
       isMapPage
-        ? "แผนที่การจราจร"
+        ? "แผนที่จราจร"
         : "เข้าสู่ระบบ"
     );
 
@@ -74,12 +74,12 @@ function Navbar({ user, setUser }) {
 
               {showMenu && (
                 <div style={styles.dropdown}>
+                  <div style={styles.triangle} />
                   <div style={styles.profileBox}>
                     <span style={styles.userText}>{user.mem_rank}</span>
                     <span style={styles.userText}>{user.mem_name}</span>
                   </div>
 
-                  <hr />
 
                   <button style={styles.logoutBtn} onClick={handleLogout}>
                     ออกจากระบบ
@@ -112,7 +112,7 @@ function Navbar({ user, setUser }) {
 const styles = {
   navbar: {
     backgroundColor: "#1976D2",
-    padding: "10px 30px",
+    padding: "15px 30px",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
@@ -120,7 +120,6 @@ const styles = {
   },
 
   logo: {
-    fontFamily: "'Prompt', sans-serif",  // 🔥 ใส่ตรงนี้
     fontSize: "20px",
     fontWeight: "bold",
   },
@@ -133,26 +132,27 @@ const styles = {
     marginLeft: "15px",
     borderRadius: "5px",
     cursor: "pointer",
-    fontFamily: "'Prompt', sans-serif",  // 🔥 ใส่ตรงนี้
     fontWeight: "bold",
   },
 
+  // ไม่มีพื้นหลัง ไม่มี border สีขาว
   buttonIcon: {
     backgroundColor: "transparent",
     color: "white",
     border: "none",
-    padding: "0px",
+    padding: "4px 6px",
     cursor: "pointer",
-    fontSize: "45px",
+    fontWeight: "bold",
+    fontSize: "32px",
     lineHeight: 1,
   },
 
   dropdown: {
     position: "absolute",
-    top: "56px",
-    right: "0",
+    top: "50px",
+    right: "20px",
     background: "white",
-    borderRadius: "12px",
+    borderRadius: "12px 0 12px 12px",
     boxShadow: "0 8px 20px rgba(0,0,0,0.25)",
     padding: "12px",
     minWidth: "200px",
@@ -163,7 +163,6 @@ const styles = {
     width: "100%",
     padding: "8px",
     background: "#ef4444",
-    fontFamily: "'Prompt', sans-serif",  // 🔥 ใส่ตรงนี้
     color: "white",
     border: "none",
     borderRadius: "6px",
@@ -173,14 +172,28 @@ const styles = {
 
   profileBox: {
     display: "flex",
-    minWidth: "210px",
     alignItems: "center",
+    gap: "8px",
     marginBottom: "8px",
+    paddingBottom: "8px",
+    borderBottom: "1px solid #e5e7eb",
+    whiteSpace: "nowrap",
   },
 
   userText: {
     fontWeight: "bold",
     color: "#333",
+  },
+
+  triangle: {
+    position: "absolute",
+    top: "-8px",
+    right: "0px",
+    width: 0,
+    height: 0,
+    borderLeft: "20px solid transparent",
+    borderRight: "0px solid transparent",
+    borderBottom: "10px solid white",
   },
 };
 
