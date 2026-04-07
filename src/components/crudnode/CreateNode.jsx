@@ -30,6 +30,12 @@ const CreateNode = ({ onClose, onSuccess }) => {
             return;
         }
 
+        // 🔥 เช็คห้ามมีอักษรพิเศษ
+        if (!/^[a-zA-Z0-9]+$/.test(nodeId)) {
+            setErrorMessage("รหัสโหนดห้ามมีอักขระพิเศษ (!@#$%^ ฯลฯ)");
+            return;
+        }
+
         try {
 
             const q = query(
@@ -56,14 +62,11 @@ const CreateNode = ({ onClose, onSuccess }) => {
                 node_datetime: Timestamp.now()
             });
 
-            // แจ้ง CrudNode ให้ดึงข้อมูลใหม่ทันที
             onSuccess();
 
         } catch (error) {
-
             console.error(error);
             setErrorMessage("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
-
         }
     };
 
