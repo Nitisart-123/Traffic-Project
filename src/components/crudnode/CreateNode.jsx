@@ -32,7 +32,13 @@ const CreateNode = ({ onClose, onSuccess }) => {
 
         // 🔥 เช็คห้ามมีอักษรพิเศษ
         if (!/^[a-zA-Z0-9]+$/.test(nodeId)) {
-            setErrorMessage("รหัสโหนดห้ามมีอักขระพิเศษ (!@#$%^ ฯลฯ)");
+            setErrorMessage("รหัสห้ามมีอักขระพิเศษ (!@#$%^)");
+            return;
+        }
+
+        // 🔥 เช็คความยาวต้อง = 6 ตัว
+        if (nodeId.length !== 6) {
+            setErrorMessage("รหัสต้องมีความยาว 6 ตัวอักษร");
             return;
         }
 
