@@ -57,7 +57,7 @@ function History({ showModal, logs, closeModal, getStatusColor, getBatteryColor 
             <div style={styles.modal}>
 
                 <div style={styles.modalHeader}>
-                    <h2 style={styles.modalTitle}>ประวัติย้อนหลัง</h2>
+                    <h2 style={styles.modalTitle}>ประวัติการจราจรย้อนหลัง</h2>
                     <button style={styles.closeIcon} onClick={closeModal}>✕</button>
                 </div>
 

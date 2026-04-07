@@ -7,8 +7,18 @@ const EditNode = ({ nodeData, onClose, onSuccess }) => {
     const [nodeName, setNodeName] = useState(nodeData?.node_name || "");
     const [latitude, setLatitude] = useState(nodeData?.node_latitude || "");
     const [longitude, setLongitude] = useState(nodeData?.node_longitude || "");
+    const [errorMessage, setErrorMessage] = useState("");
 
     const handleUpdate = async () => {
+
+        setErrorMessage("");
+
+        // 🔥 เช็คค่าว่าง
+        if (!nodeName.trim() || !latitude || !longitude) {
+            setErrorMessage("กรุณากรอกข้อมูลให้ครบ");
+            return;
+        }
+
         try {
             const nodeRef = doc(db, "Sensor_Node", nodeData.id);
 
@@ -21,6 +31,7 @@ const EditNode = ({ nodeData, onClose, onSuccess }) => {
             onSuccess();
         } catch (error) {
             console.error("Update Error:", error);
+            setErrorMessage("เกิดข้อผิดพลาดในการแก้ไขข้อมูล");
         }
     };
 
@@ -33,6 +44,12 @@ const EditNode = ({ nodeData, onClose, onSuccess }) => {
                     <h2 style={styles.title}>แก้ไขข้อมูลโหนดเซนเซอร์</h2>
                     <button style={styles.closeButton} onClick={onClose}>✕</button>
                 </div>
+
+                {errorMessage && (
+                    <div style={styles.errorText}>
+                        {errorMessage}
+                    </div>
+                )}
 
                 <label style={styles.label}>ชื่อโหนด</label>
                 <input
@@ -106,6 +123,12 @@ const styles = {
         fontFamily: "'Prompt', sans-serif",
         margin: 0,
         textAlign: "left",
+    },
+
+    errorText: {
+        color: "red",
+        marginBottom: "10px",
+        fontWeight: "bold",
     },
 
     closeButton: {

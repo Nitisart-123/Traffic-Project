@@ -33,14 +33,14 @@ function Navbar({ user, setUser }) {
   const pageTitle = user
     ? (
       isMapPage
-        ? "แผนที่จราจร"
+        ? "แผนที่การจราจร"
         : isTablePage
           ? "ตารางข้อมูลการจราจร"
           : "จัดการข้อมูลโหนดเซนเซอร์"
     )
     : (
       isMapPage
-        ? "แผนที่จราจร"
+        ? "แผนที่การจราจร"
         : "เข้าสู่ระบบ"
     );
 
