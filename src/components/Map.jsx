@@ -55,12 +55,10 @@ function Map() {
     return () => unsubscribe();
   }, []);
 
-
-
   const suggestions = searchText.trim()
     ? nodes.filter((node) =>
-        node.node_name?.toLowerCase().includes(searchText.trim().toLowerCase())
-      )
+      node.node_name?.toLowerCase().includes(searchText.trim().toLowerCase())
+    )
     : [];
 
   const goToNode = (node) => {
@@ -110,8 +108,105 @@ function Map() {
   return (
     <div style={{ position: "relative" }}>
 
+      {/* ===== Responsive Styles ===== */}
+      <style>{`
+        .map-search-container {
+          position: absolute;
+          top: 16px;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 10;
+          display: flex;
+          flex-direction: column;
+          width: 360px;
+        }
+
+        .map-info-dot {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+
+        /* Tablet */
+        @media (max-width: 768px) {
+          .map-search-container {
+            width: calc(100vw - 150px);
+            top: 12px;
+          }
+        }
+
+        /* Mobile */
+        @media (max-width: 480px) {
+          .map-search-container {
+            top: 10px;
+          }
+        }
+
+        .map-info-card {
+          background: #f3f3f3;
+          padding: 10px 40px;
+          border-radius: 35px;
+          min-width: 480px;
+          font-family: Kanit, sans-serif;
+          position: relative;
+        }
+
+        .map-info-datarow {
+          display: flex;
+          justify-content: space-between;
+          font-size: 25px;
+        }
+
+        .map-info-nodename {
+          font-size: 42px;
+          font-weight: bold;
+          text-align: center;
+          flex: 1;
+        }
+
+        /* Tablet InfoWindow */
+        @media (max-width: 768px) {
+          .map-info-dot {
+            width: 20px;
+            height: 20px;
+          }
+          .map-info-card {
+            min-width: 280px;
+            padding: 10px 24px;
+            border-radius: 20px;
+          }
+          .map-info-datarow {
+            font-size: 16px;
+          }
+          .map-info-nodename {
+            font-size: 22px;
+          }
+        }
+
+        /* Mobile InfoWindow */
+        @media (max-width: 480px) {
+          .map-info-dot {
+            width: 15px;
+            height: 15px;
+          }
+          .map-info-card {
+            min-width: 220px;
+            padding: 8px 16px;
+            border-radius: 16px;
+          }
+          .map-info-datarow {
+            font-size: 14px;
+          }
+          .map-info-nodename {
+            font-size: 18px;
+          }
+        }
+      `}</style>
+
       {/* ===== Search Box ===== */}
-      <div style={styles.searchContainer}>
+      <div className="map-search-container">
         <div style={{
           ...styles.searchBox,
           borderRadius: (hasDropdown || hasError) ? "12px 12px 0 0" : "12px",
@@ -236,14 +331,14 @@ function Map() {
                 pixelOffset: new window.google.maps.Size(0, -30),
               }}
             >
-              <div style={{ ...styles.card, border: `5px solid ${color}` }}>
+              <div className="map-info-card" style={{ border: `5px solid ${color}` }}>
                 <div style={styles.header}>
-                  <div style={{ ...styles.dot, backgroundColor: color }} />
-                  <div style={styles.nodeName}>{selectedNode.node_name}</div>
+                  <div className="map-info-dot" style={{ backgroundColor: color }} />
+                  <div className="map-info-nodename">{selectedNode.node_name}</div>
                   <div style={styles.closeBtn} onClick={() => setSelectedNode(null)}>✕</div>
                 </div>
 
-                <div style={styles.dataRow}>
+                <div className="map-info-datarow">
                   <div style={styles.label}>
                     <p>ความเร็วเฉลี่ย</p>
                     <p>จำนวนรถ</p>
@@ -265,17 +360,6 @@ function Map() {
 }
 
 const styles = {
-  searchContainer: {
-    position: "absolute",
-    top: "16px",
-    left: "50%",
-    transform: "translateX(-50%)",
-    zIndex: 10,
-    display: "flex",
-    flexDirection: "column",
-    width: "360px",
-  },
-
   searchBox: {
     display: "flex",
     alignItems: "center",
@@ -284,7 +368,6 @@ const styles = {
     padding: "10px 14px",
     boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
   },
-
 
   searchInput: {
     flex: 1,
@@ -306,7 +389,6 @@ const styles = {
     flexShrink: 0,
   },
 
-
   dropdown: {
     backgroundColor: "white",
     borderTop: "1px solid #e2e8f0",
@@ -323,12 +405,6 @@ const styles = {
     cursor: "pointer",
     backgroundColor: "white",
     transition: "background 0.15s",
-  },
-
-  suggestionIcon: {
-    fontSize: "15px",
-    color: "#64748b",
-    flexShrink: 0,
   },
 
   suggestionText: {
@@ -356,56 +432,24 @@ const styles = {
     textAlign: "center",
   },
 
-  card: {
-    background: "#f3f3f3",
-    padding: "10px 40px",
-    borderRadius: "35px",
-    minWidth: "480px",
-    fontFamily: "Kanit, sans-serif",
-    position: "relative",
+  header: {
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+    marginBottom: "15px",
   },
 
-  dataRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    fontSize: "25px",
+  closeBtn: {
+    marginLeft: "auto",
+    fontSize: "20px",
+    fontWeight: "bold",
+    cursor: "pointer",
+    flexShrink: 0,
+    lineHeight: 1,
   },
 
   label: { display: "flex", flexDirection: "column" },
   value: { display: "flex", flexDirection: "column", textAlign: "left" },
-
-  closeBtn: {
-    position: "absolute",
-    top: "10px",
-    right: "0px",
-    fontSize: "26px",
-    fontWeight: "bold",
-    cursor: "pointer",
-  },
-
-  header: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: "15px",
-    position: "relative",
-  },
-
-  dot: {
-    width: "30px",
-    height: "30px",
-    borderRadius: "50%",
-    position: "absolute",
-    left: "0px",
-    top: "15px",
-  },
-
-  nodeName: {
-    fontFamily: "'Prompt', sans-serif",  // 🔥 ใส่ตรงนี้
-    fontSize: "42px",
-    fontWeight: "bold",
-    textAlign: "center",
-  },
 
   valueStyle: {
     padding: "0px 20px 0px 0px",
