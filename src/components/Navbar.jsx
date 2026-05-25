@@ -6,6 +6,7 @@ function Navbar({ user, setUser }) {
   const location = useLocation();
 
   const [showMenu, setShowMenu] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 649);
   const menuRef = useRef();
 
   useEffect(() => {
@@ -14,9 +15,14 @@ function Navbar({ user, setUser }) {
         setShowMenu(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 649);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const isMapPage = location.pathname === "/";
@@ -28,6 +34,11 @@ function Navbar({ user, setUser }) {
     localStorage.removeItem("user");
     setUser(null);
     navigate("/");
+  };
+
+  const handleNavigate = (path) => {
+    setShowMenu(false);
+    navigate(path);
   };
 
   const pageTitle = user
@@ -52,19 +63,22 @@ function Navbar({ user, setUser }) {
 
         {user ? (
           <>
-            <button style={styles.button} onClick={() => navigate("/")}>
-              ดูแผนที่
-            </button>
+            {/* ปุ่ม nav — ซ่อนเมื่อ < 649px */}
+            {!isMobile && (
+              <>
+                <button style={styles.button} onClick={() => navigate("/")}>
+                  ดูแผนที่
+                </button>
+                <button style={styles.button} onClick={() => navigate("/table")}>
+                  ตารางข้อมูล
+                </button>
+                <button style={styles.button} onClick={() => navigate("/crudnode")}>
+                  จัดการโหนด
+                </button>
+              </>
+            )}
 
-            <button style={styles.button} onClick={() => navigate("/table")}>
-              ตารางข้อมูล
-            </button>
-
-            <button style={styles.button} onClick={() => navigate("/crudnode")}>
-              จัดการโหนด
-            </button>
-
-            {/* ACCOUNT BUTTON — อยู่ขวาสุด */}
+            {/* ACCOUNT BUTTON */}
             <div style={{ position: "relative", marginLeft: "15px" }} ref={menuRef}>
               <button
                 style={styles.buttonIcon}
@@ -76,11 +90,26 @@ function Navbar({ user, setUser }) {
               {showMenu && (
                 <div style={styles.dropdown}>
                   <div style={styles.triangle} />
+
+                  {/* ปุ่ม nav ใน dropdown — แสดงเมื่อ < 649px */}
+                  {isMobile && (
+                    <div style={styles.navGroup}>
+                      <button style={styles.navBtn} onClick={() => handleNavigate("/")}>
+                        ดูแผนที่
+                      </button>
+                      <button style={styles.navBtn} onClick={() => handleNavigate("/table")}>
+                        ตารางข้อมูล
+                      </button>
+                      <button style={styles.navBtn} onClick={() => handleNavigate("/crudnode")}>
+                        จัดการโหนด
+                      </button>
+                    </div>
+                  )}
+
                   <div style={styles.profileBox}>
                     <span style={styles.userText}>{user.mem_rank}</span>
                     <span style={styles.userText}>{user.mem_name}</span>
                   </div>
-
 
                   <button style={styles.logoutBtn} onClick={handleLogout}>
                     ออกจากระบบ
@@ -96,7 +125,6 @@ function Navbar({ user, setUser }) {
                 ดูแผนที่
               </button>
             )}
-
             {!isLoginPage && (
               <button style={styles.button} onClick={() => navigate("/login")}>
                 เข้าสู่ระบบ
@@ -138,7 +166,6 @@ const styles = {
     fontWeight: "bold",
   },
 
-  // ไม่มีพื้นหลัง ไม่มี border สีขาว
   buttonIcon: {
     backgroundColor: "transparent",
     color: "white",
@@ -160,6 +187,29 @@ const styles = {
     padding: "12px",
     minWidth: "200px",
     zIndex: 100,
+  },
+
+  // ปุ่ม nav ใน dropdown (mobile)
+  navGroup: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "6px",
+    marginBottom: "10px",
+    paddingBottom: "10px",
+    borderBottom: "1px solid #e5e7eb",
+  },
+
+  navBtn: {
+    fontFamily: "'Prompt', sans-serif",
+    width: "100%",
+    padding: "8px 12px",
+    background: "#1976D2",
+    color: "white",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+    fontWeight: "bold",
+    textAlign: "left",
   },
 
   logoutBtn: {
