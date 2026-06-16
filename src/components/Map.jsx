@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { GoogleMap, Marker, InfoWindow, useLoadScript } from "@react-google-maps/api";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
+import { useLanguage } from "./LanguageContext";
 
 const mapAPIKey = import.meta.env.VITE_GOOGLE_MAPS_KEY;
 
@@ -12,19 +13,23 @@ function Map() {
 
   const mapRef = useRef(null);
 
+  // ===== ภาษา (จาก Context กลาง) — ใช้แปลเฉพาะ UI ไม่แปลข้อมูลจากฐานข้อมูล =====
+  const { t: tAll } = useLanguage();
+  const t = tAll.map;
+
   const [nodes, setNodes] = useState([]);
   const [center, setCenter] = useState(null);
   const [selectedNode, setSelectedNode] = useState(null);
   const [searchText, setSearchText] = useState("");
-  const [searchError, setSearchError] = useState("");
+  const [searchError, setSearchError] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   const getStatusColor = (status) => {
-        if (status === "รถติดหยุดนิ่ง" || status === "รถติดมาก"  || status === "Standstill" || status === "Heavy")
+        if (status === "Standstill" || status === "Heavy")
             return "#dc2626";
-        if (status === "รถติดน้อย" || status === "Light")
+        if (status === "Light")
             return "#eab308";
-        if (status === "รถไหลปกติ" || status === "Normal")
+        if (status === "Normal")
             return "#16a34a";
     };
 
@@ -69,11 +74,11 @@ function Map() {
     setSelectedNode(node);
     setSearchText(node.node_name);
     setShowSuggestions(false);
-    setSearchError("");
+    setSearchError(false);
   };
 
   const handleSearch = () => {
-    setSearchError("");
+    setSearchError(false);
     const keyword = searchText.trim().toLowerCase();
     if (!keyword) return;
 
@@ -82,7 +87,7 @@ function Map() {
     );
 
     if (!found) {
-      setSearchError("ไม่พบชื่อที่ค้นหา");
+      setSearchError(true);
       setShowSuggestions(false);
       return;
     }
@@ -208,7 +213,7 @@ function Map() {
         }}>
           <input
             type="text"
-            placeholder="ค้นหาชื่อถนน..."
+            placeholder={t.searchPlaceholder}
             value={searchText}
             onChange={(e) => {
               const val = e.target.value;
@@ -218,9 +223,9 @@ function Map() {
                 const found = nodes.some((node) =>
                   node.node_name?.toLowerCase().includes(val.trim().toLowerCase())
                 );
-                setSearchError(found ? "" : "ไม่พบชื่อที่ค้นหา");
+                setSearchError(!found);
               } else {
-                setSearchError("");
+                setSearchError(false);
               }
             }}
             onFocus={() => setShowSuggestions(true)}
@@ -233,7 +238,7 @@ function Map() {
               style={styles.clearButton}
               onClick={() => {
                 setSearchText("");
-                setSearchError("");
+                setSearchError(false);
                 setShowSuggestions(false);
               }}
             >
@@ -264,7 +269,7 @@ function Map() {
         )}
 
         {hasError && (
-          <div style={styles.dropdownError}>ไม่พบชื่อที่ค้นหา</div>
+          <div style={styles.dropdownError}>{t.notFound}</div>
         )}
       </div>
 
@@ -335,13 +340,13 @@ function Map() {
 
                 <div className="map-info-datarow">
                   <div style={styles.label}>
-                    <p>ความเร็วเฉลี่ย</p>
-                    <p>จำนวนรถ</p>
-                    <p>สถานะการจราจร</p>
+                    <p>{t.avgSpeed}</p>
+                    <p>{t.carCount}</p>
+                    <p>{t.statusLabel}</p>
                   </div>
                   <div style={styles.value}>
-                    <p><span style={styles.valueStyle}>{selectedNode.node_speed}</span>กม/ชม</p>
-                    <p><span style={styles.valueStyle}>{selectedNode.node_countcar}</span>คัน/นาที</p>
+                    <p><span style={styles.valueStyle}>{selectedNode.node_speed}</span>{t.speedUnit}</p>
+                    <p><span style={styles.valueStyle}>{selectedNode.node_countcar}</span>{t.carUnit}</p>
                     <p style={{ color: color, fontWeight: "bold" }}>{selectedNode.node_status} Traffic</p>
                   </div>
                 </div>

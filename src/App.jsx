@@ -6,7 +6,8 @@ import Navbar from "./components/Navbar";
 import Map from "./components/Map";
 import Table from "./components/table/Table";
 import CrudNode from "./components/crudnode/CrudNode";
-import Login from "./components/Login"; // 👈 เพิ่ม
+import Login from "./components/Login";
+import { LanguageProvider } from "./components/LanguageContext";
 
 function App() {
 
@@ -16,37 +17,39 @@ const [user, setUser] = useState(() => {
 });
 
   return (
-    <BrowserRouter>
+    <LanguageProvider>
+      <BrowserRouter>
 
-      <Navbar user={user} setUser={setUser} />
+        <Navbar user={user} setUser={setUser} />
 
-      <Routes>
+        <Routes>
 
-        {/* ทุกคนดูได้ */}
-        <Route path="/" element={<Map />} />
+          {/* ทุกคนดูได้ */}
+          <Route path="/" element={<Map />} />
 
-        {/* หน้า Login */}
-        <Route path="/login" element={<Login onLogin={setUser} />} />
+          {/* หน้า Login */}
+          <Route path="/login" element={<Login onLogin={setUser} />} />
 
-        {/* 🔒 ต้อง login เท่านั้น */}
-        <Route
-          path="/crudnode"
-          element={
-            user ? <CrudNode /> : <Navigate to="/login" />
-          }
-        />
+          {/* 🔒 ต้อง login เท่านั้น */}
+          <Route
+            path="/crudnode"
+            element={
+              user ? <CrudNode /> : <Navigate to="/login" />
+            }
+          />
 
-        {/* จะล็อก table ด้วยก็ได้ */}
-        <Route
-          path="/table"
-          element={
-            user ? <Table /> : <Navigate to="/login" />
-          }
-        />
+          {/* จะล็อก table ด้วยก็ได้ */}
+          <Route
+            path="/table"
+            element={
+              user ? <Table /> : <Navigate to="/login" />
+            }
+          />
 
-      </Routes>
+        </Routes>
 
-    </BrowserRouter>
+      </BrowserRouter>
+    </LanguageProvider>
   );
 }
 

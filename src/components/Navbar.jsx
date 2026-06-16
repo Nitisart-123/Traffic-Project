@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useLanguage } from "./LanguageContext";
 
 function Navbar({ user, setUser }) {
   const navigate = useNavigate();
@@ -8,6 +9,10 @@ function Navbar({ user, setUser }) {
   const [showMenu, setShowMenu] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 715);
   const menuRef = useRef();
+
+  // ===== ภาษา (จาก Context กลาง) =====
+  const { language, setLanguage, t: tAll } = useLanguage();
+  const t = tAll.navbar;
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -42,18 +47,8 @@ function Navbar({ user, setUser }) {
   };
 
   const pageTitle = user
-    ? (
-      isMapPage
-        ? "แผนที่การจราจร"
-        : isTablePage
-          ? "ตารางข้อมูลการจราจร"
-          : "จัดการข้อมูลโหนดเซนเซอร์"
-    )
-    : (
-      isMapPage
-        ? "แผนที่การจราจร"
-        : "เข้าสู่ระบบ"
-    );
+    ? (isMapPage ? t.map : isTablePage ? t.table : t.crud)
+    : (isMapPage ? t.map : t.login);
 
   return (
     <nav style={styles.navbar}>
@@ -63,52 +58,38 @@ function Navbar({ user, setUser }) {
 
         {user ? (
           <>
-            {/* ปุ่ม nav — ซ่อนเมื่อ < 649px */}
             {!isMobile && (
               <>
-                <button style={styles.button} onClick={() => navigate("/")}>
-                  ดูแผนที่
-                </button>
-                <button style={styles.button} onClick={() => navigate("/table")}>
-                  ตารางข้อมูล
-                </button>
-                <button style={styles.button} onClick={() => navigate("/crudnode")}>
-                  จัดการโหนด
-                </button>
+                <button style={styles.button} onClick={() => navigate("/")}>{t.viewMap}</button>
+                <button style={styles.button} onClick={() => navigate("/table")}>{t.viewTable}</button>
+                <button style={styles.button} onClick={() => navigate("/crudnode")}>{t.manage}</button>
               </>
             )}
 
-            {/* ACCOUNT BUTTON */}
             <div style={{ position: "relative", marginLeft: "15px" }} ref={menuRef}>
-              <button
-                style={styles.buttonIcon}
-                onClick={() => setShowMenu(!showMenu)}
-              >
+              <button style={styles.buttonIcon} onClick={() => setShowMenu(!showMenu)}>
                 ☰
               </button>
 
               {showMenu && isMobile && (
-                <div
-                  style={styles.backdrop}
-                  onClick={() => setShowMenu(false)}
-                />
+                <div style={styles.backdrop} onClick={() => setShowMenu(false)} />
               )}
+
               {showMenu && (
                 <div style={isMobile ? styles.dropdownMobile : styles.dropdown}>
                   {!isMobile && <div style={styles.triangle} />}
 
-                  {/* ปุ่ม nav ใน dropdown — แสดงเมื่อ < 649px */}
                   {isMobile && (
                     <div style={styles.navGroup}>
-                      <div style={styles.menuHeader}>เมนู</div>
+                      <div style={styles.menuHeader}>{t.menu}</div>
                       <button style={styles.navBtn} onClick={() => handleNavigate("/")}>
-                        <i className="bi bi-geo-alt" style={styles.navBtnIcon}></i> ดูแผนที่
+                        <i className="bi bi-geo-alt" style={styles.navBtnIcon}></i>{t.viewMap}
                       </button>
                       <button style={styles.navBtn} onClick={() => handleNavigate("/table")}>
-                        <i className="bi bi-table" style={styles.navBtnIcon}></i> ตารางข้อมูล
+                        <i className="bi bi-table" style={styles.navBtnIcon}></i>{t.viewTable}
                       </button>
                       <button style={styles.navBtn} onClick={() => handleNavigate("/crudnode")}>
-                        <i className="bi bi-clipboard-data" style={styles.navBtnIcon}></i> จัดการโหนด
+                        <i className="bi bi-clipboard-data" style={styles.navBtnIcon}></i>{t.manage}
                       </button>
                     </div>
                   )}
@@ -118,8 +99,28 @@ function Navbar({ user, setUser }) {
                     <span style={styles.userText}>{user.mem_name}</span>
                   </div>
 
+                  {/* ===== Language Toggle ===== */}
+                  <div style={styles.langBox}>
+                    <i className="bi bi-globe2" style={styles.langIcon}></i>
+                    <span style={styles.langLabel}>{t.langLabel}</span>
+                    <div style={styles.langToggle}>
+                      <button
+                        style={{ ...styles.langBtn, ...(language === "th" ? styles.langBtnActive : {}) }}
+                        onClick={() => setLanguage("th")}
+                      >
+                        {t.langTh}
+                      </button>
+                      <button
+                        style={{ ...styles.langBtn, ...(language === "en" ? styles.langBtnActive : {}) }}
+                        onClick={() => setLanguage("en")}
+                      >
+                        {t.langEn}
+                      </button>
+                    </div>
+                  </div>
+
                   <button style={styles.logoutBtn} onClick={handleLogout}>
-                    ออกจากระบบ
+                    {t.logout}
                   </button>
                 </div>
               )}
@@ -128,14 +129,10 @@ function Navbar({ user, setUser }) {
         ) : (
           <>
             {!isMapPage && (
-              <button style={styles.button} onClick={() => navigate("/")}>
-                ดูแผนที่
-              </button>
+              <button style={styles.button} onClick={() => navigate("/")}>{t.viewMap}</button>
             )}
             {!isLoginPage && (
-              <button style={styles.button} onClick={() => navigate("/login")}>
-                เข้าสู่ระบบ
-              </button>
+              <button style={styles.button} onClick={() => navigate("/login")}>{t.login}</button>
             )}
           </>
         )}
@@ -192,11 +189,10 @@ const styles = {
     borderRadius: "12px 0 12px 12px",
     boxShadow: "0 8px 20px rgba(0,0,0,0.25)",
     padding: "12px",
-    minWidth: "200px",
+    minWidth: "220px",
     zIndex: 100,
   },
 
-  // ปุ่ม nav ใน dropdown (mobile)
   navGroup: {
     display: "flex",
     flexDirection: "column",
@@ -210,7 +206,6 @@ const styles = {
   },
 
   navBtn: {
-    // fontFamily: "'Prompt', sans-serif",
     width: "100%",
     padding: "10px 4px",
     background: "transparent",
@@ -218,7 +213,6 @@ const styles = {
     border: "none",
     borderBottom: "1px solid #e5e7eb",
     cursor: "pointer",
-    // fontWeight: "bold",
     textAlign: "left",
   },
 
@@ -243,18 +237,6 @@ const styles = {
     zIndex: 200,
   },
 
-  logoutBtn: {
-    fontFamily: "'Prompt', sans-serif",
-    width: "100%",
-    padding: "8px",
-    background: "#ef4444",
-    color: "white",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
-    marginTop: "5px",
-  },
-
   profileBox: {
     display: "flex",
     alignItems: "center",
@@ -267,6 +249,64 @@ const styles = {
   userText: {
     fontWeight: "bold",
     color: "#333",
+  },
+
+  // ===== Language Toggle =====
+  langBox: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    padding: "8px 0",
+    marginBottom: "4px",
+    borderBottom: "1px solid #e5e7eb",
+  },
+
+  langIcon: {
+    color: "#64748b",
+    fontSize: "15px",
+    flexShrink: 0,
+  },
+
+  langLabel: {
+    color: "#333",
+    fontWeight: "bold",
+    fontSize: "14px",
+    flexShrink: 0,
+  },
+
+  langToggle: {
+    display: "flex",
+    marginLeft: "auto",
+    border: "1px solid #e2e8f0",
+    borderRadius: "6px",
+    overflow: "hidden",
+  },
+
+  langBtn: {
+    padding: "4px 10px",
+    border: "none",
+    background: "transparent",
+    color: "#64748b",
+    cursor: "pointer",
+    fontSize: "13px",
+    fontWeight: "bold",
+  },
+
+  langBtnActive: {
+    backgroundColor: "#1976D2",
+    color: "white",
+  },
+
+  logoutBtn: {
+    fontFamily: "'Prompt', sans-serif",
+    width: "100%",
+    padding: "8px",
+    background: "#ef4444",
+    color: "white",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+    marginTop: "5px",
   },
 
   backdrop: {
