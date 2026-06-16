@@ -20,11 +20,11 @@ function Map() {
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   const getStatusColor = (status) => {
-        if (status === "รถติดหยุดนิ่ง" || status === "รถติดมาก"  || status === "Standstill Traffic" || status === "Heavy Traffic")
+        if (status === "รถติดหยุดนิ่ง" || status === "รถติดมาก"  || status === "Standstill" || status === "Heavy")
             return "#dc2626";
-        if (status === "รถติดน้อย" || status === "Light Traffic")
+        if (status === "รถติดน้อย" || status === "Light")
             return "#eab308";
-        if (status === "รถไหลปกติ" || status === "Normal Traffic")
+        if (status === "รถไหลปกติ" || status === "Normal")
             return "#16a34a";
     };
 
@@ -342,7 +342,7 @@ function Map() {
                   <div style={styles.value}>
                     <p><span style={styles.valueStyle}>{selectedNode.node_speed}</span>กม/ชม</p>
                     <p><span style={styles.valueStyle}>{selectedNode.node_countcar}</span>คัน/นาที</p>
-                    <p style={{ color: color, fontWeight: "bold" }}>{selectedNode.node_status}</p>
+                    <p style={{ color: color, fontWeight: "bold" }}>{selectedNode.node_status} Traffic</p>
                   </div>
                 </div>
               </div>
