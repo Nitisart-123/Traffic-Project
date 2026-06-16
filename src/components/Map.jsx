@@ -20,18 +20,13 @@ function Map() {
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   const getStatusColor = (status) => {
-    switch (status) {
-      case "รถติดหยุดนิ่ง":
-      case "รถติดมาก":
-        return "#ff0000";
-      case "รถติดน้อย":
-        return "#ffc107";
-      case "รถไหลปกติ":
-        return "#28a745";
-      default:
-        return "#999";
-    }
-  };
+        if (status === "รถติดหยุดนิ่ง" || status === "รถติดมาก"  || status === "Standstill Traffic" || status === "Heavy Traffic")
+            return "#dc2626";
+        if (status === "รถติดน้อย" || status === "Light Traffic")
+            return "#eab308";
+        if (status === "รถไหลปกติ" || status === "Normal Traffic")
+            return "#16a34a";
+    };
 
   useEffect(() => {
     const unsubscribe = onSnapshot(

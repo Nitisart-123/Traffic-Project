@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useState } from "react";
+import 'bootstrap-icons/font/bootstrap-icons.css'
 
 import Navbar from "./components/Navbar";
 import Map from "./components/Map";

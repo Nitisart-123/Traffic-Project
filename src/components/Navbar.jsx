@@ -6,7 +6,7 @@ function Navbar({ user, setUser }) {
   const location = useLocation();
 
   const [showMenu, setShowMenu] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 649);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 715);
   const menuRef = useRef();
 
   useEffect(() => {
@@ -20,7 +20,7 @@ function Navbar({ user, setUser }) {
   }, []);
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 649);
+    const handleResize = () => setIsMobile(window.innerWidth < 715);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -87,21 +87,28 @@ function Navbar({ user, setUser }) {
                 ☰
               </button>
 
+              {showMenu && isMobile && (
+                <div
+                  style={styles.backdrop}
+                  onClick={() => setShowMenu(false)}
+                />
+              )}
               {showMenu && (
-                <div style={styles.dropdown}>
-                  <div style={styles.triangle} />
+                <div style={isMobile ? styles.dropdownMobile : styles.dropdown}>
+                  {!isMobile && <div style={styles.triangle} />}
 
                   {/* ปุ่ม nav ใน dropdown — แสดงเมื่อ < 649px */}
                   {isMobile && (
                     <div style={styles.navGroup}>
+                      <div style={styles.menuHeader}>เมนู</div>
                       <button style={styles.navBtn} onClick={() => handleNavigate("/")}>
-                        ดูแผนที่
+                        <i className="bi bi-geo-alt" style={styles.navBtnIcon}></i> ดูแผนที่
                       </button>
                       <button style={styles.navBtn} onClick={() => handleNavigate("/table")}>
-                        ตารางข้อมูล
+                        <i className="bi bi-table" style={styles.navBtnIcon}></i> ตารางข้อมูล
                       </button>
                       <button style={styles.navBtn} onClick={() => handleNavigate("/crudnode")}>
-                        จัดการโหนด
+                        <i className="bi bi-clipboard-data" style={styles.navBtnIcon}></i> จัดการโหนด
                       </button>
                     </div>
                   )}
@@ -193,23 +200,47 @@ const styles = {
   navGroup: {
     display: "flex",
     flexDirection: "column",
-    gap: "6px",
+    gap: "0px",
     marginBottom: "10px",
+  },
+
+  navBtnIcon: {
+    marginRight: "8px",
+    fontSize: "16px",
+  },
+
+  navBtn: {
+    // fontFamily: "'Prompt', sans-serif",
+    width: "100%",
+    padding: "10px 4px",
+    background: "transparent",
+    color: "#111",
+    border: "none",
+    borderBottom: "1px solid #e5e7eb",
+    cursor: "pointer",
+    // fontWeight: "bold",
+    textAlign: "left",
+  },
+
+  menuHeader: {
+    fontWeight: "bold",
+    color: "#111",
+    fontSize: "24px",
+    marginBottom: "8px",
     paddingBottom: "10px",
     borderBottom: "1px solid #e5e7eb",
   },
 
-  navBtn: {
-    fontFamily: "'Prompt', sans-serif",
-    width: "100%",
-    padding: "8px 12px",
-    background: "#1976D2",
-    color: "white",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontWeight: "bold",
-    textAlign: "left",
+  dropdownMobile: {
+    position: "fixed",
+    top: "0px",
+    right: "0px",
+    background: "white",
+    borderRadius: "0 0 0 16px",
+    boxShadow: "0 8px 20px rgba(0,0,0,0.25)",
+    padding: "20px",
+    width: "280px",
+    zIndex: 200,
   },
 
   logoutBtn: {
@@ -236,6 +267,16 @@ const styles = {
   userText: {
     fontWeight: "bold",
     color: "#333",
+  },
+
+  backdrop: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100vw",
+    height: "100vh",
+    backgroundColor: "rgba(0,0,0,0.35)",
+    zIndex: 199,
   },
 
   triangle: {
