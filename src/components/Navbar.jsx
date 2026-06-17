@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useLanguage } from "./LanguageContext";
+import { useLanguage } from "./languagecontext/useLanguage";
 
 function Navbar({ user, setUser }) {
   const navigate = useNavigate();

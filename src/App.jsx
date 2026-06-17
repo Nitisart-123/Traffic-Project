@@ -7,7 +7,7 @@ import Map from "./components/Map";
 import Table from "./components/table/Table";
 import CrudNode from "./components/crudnode/CrudNode";
 import Login from "./components/Login";
-import { LanguageProvider } from "./components/LanguageContext";
+import { LanguageProvider } from "./components/languagecontext/LanguageProvider";
 
 function App() {
 

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { GoogleMap, Marker, InfoWindow, useLoadScript } from "@react-google-maps/api";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
-import { useLanguage } from "./LanguageContext";
+import { useLanguage } from "./languagecontext/useLanguage";
 
 const mapAPIKey = import.meta.env.VITE_GOOGLE_MAPS_KEY;
 
@@ -347,7 +347,7 @@ function Map() {
                   <div style={styles.value}>
                     <p><span style={styles.valueStyle}>{selectedNode.node_speed}</span>{t.speedUnit}</p>
                     <p><span style={styles.valueStyle}>{selectedNode.node_countcar}</span>{t.carUnit}</p>
-                    <p style={{ color: color, fontWeight: "bold" }}>{selectedNode.node_status} Traffic</p>
+                    <p style={{ color: color, fontWeight: "bold" }}>{selectedNode.node_status} {t.trafficSuffix}</p>
                   </div>
                 </div>
               </div>

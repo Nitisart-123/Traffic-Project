@@ -1,9 +1,5 @@
-import React, { createContext, useContext, useState } from "react";
-
-const LanguageContext = createContext(null);
-
 // ===== คำแปลทั้งหมดของ UI (ไม่เกี่ยวกับข้อมูลที่ดึงจากฐานข้อมูล) =====
-const translations = {
+export const translations = {
   th: {
     navbar: {
       map: "แผนที่การจราจร",
@@ -27,6 +23,7 @@ const translations = {
       statusLabel: "สถานะการจราจร",
       speedUnit: "กม/ชม",
       carUnit: "คัน/นาที",
+      trafficSuffix: "การจราจร",
     },
   },
   en: {
@@ -52,37 +49,7 @@ const translations = {
       statusLabel: "Traffic Status",
       speedUnit: "km/h",
       carUnit: "veh/min",
+      trafficSuffix: "Traffic",
     },
   },
 };
-
-export function LanguageProvider({ children }) {
-  const [language, setLanguage] = useState("th"); // "th" | "en"
-
-  const toggleLanguage = () => {
-    setLanguage((prev) => (prev === "th" ? "en" : "th"));
-  };
-
-  const value = {
-    language,
-    setLanguage, // ใช้เลือกภาษาตรง ๆ เช่น setLanguage("en")
-    toggleLanguage, // ใช้สลับไป-มาระหว่าง th/en
-    t: translations[language], // ดิกชันนารีคำแปลของภาษาปัจจุบัน
-  };
-
-  return (
-    <LanguageContext.Provider value={value}>
-      {children}
-    </LanguageContext.Provider>
-  );
-}
-
-export function useLanguage() {
-  const context = useContext(LanguageContext);
-  if (!context) {
-    throw new Error("useLanguage ต้องถูกใช้ภายใน <LanguageProvider>");
-  }
-  return context;
-}
-
-export default LanguageContext;
