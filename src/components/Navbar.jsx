@@ -131,6 +131,24 @@ function Navbar({ user, setUser }) {
             {!isMapPage && (
               <button style={styles.button} onClick={() => navigate("/")}>{t.viewMap}</button>
             )}
+
+            {/* ===== Language Toggle (ยังไม่ login) ===== */}
+            <i className="bi bi-globe2" style={styles.navLangIcon}></i>
+            <div style={styles.langToggleNav}>
+              <button
+                style={{ ...styles.navLangBtn, ...(language === "th" ? styles.navLangBtnActive : {}) }}
+                onClick={() => setLanguage("th")}
+              >
+                {t.langTh}
+              </button>
+              <button
+                style={{ ...styles.navLangBtn, ...(language === "en" ? styles.navLangBtnActive : {}) }}
+                onClick={() => setLanguage("en")}
+              >
+                {t.langEn}
+              </button>
+            </div>
+
             {!isLoginPage && (
               <button style={styles.button} onClick={() => navigate("/login")}>{t.login}</button>
             )}
@@ -251,7 +269,7 @@ const styles = {
     color: "#333",
   },
 
-  // ===== Language Toggle =====
+  // ===== Language Toggle (ในเมนู dropdown, พื้นหลังขาว) =====
   langBox: {
     display: "flex",
     alignItems: "center",
@@ -280,6 +298,39 @@ const styles = {
     border: "1px solid #e2e8f0",
     borderRadius: "6px",
     overflow: "hidden",
+  },
+
+  // ===== ไอคอนภาษา (อยู่บน navbar สีฟ้าตรง ๆ ก่อน login) =====
+  navLangIcon: {
+    color: "white",
+    fontSize: "22px",
+    marginLeft: "15px",
+  },
+
+  // ===== Language Toggle (อยู่บน navbar สีฟ้าตรง ๆ ก่อน login) =====
+  langToggleNav: {
+    display: "flex",
+    marginLeft: "8px",
+    border: "1.5px solid rgba(255,255,255,0.6)",
+    borderRadius: "20px",
+    padding: "2px",
+    overflow: "hidden",
+  },
+
+  navLangBtn: {
+    padding: "4px 12px",
+    border: "none",
+    backgroundColor: "#1976D2",
+    color: "white",
+    cursor: "pointer",
+    fontSize: "13px",
+    fontWeight: "bold",
+    borderRadius: "18px",
+  },
+
+  navLangBtnActive: {
+    backgroundColor: "white",
+    color: "#1976D2",
   },
 
   langBtn: {
