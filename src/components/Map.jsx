@@ -347,7 +347,7 @@ function Map() {
                   <div style={styles.value}>
                     <p><span style={styles.valueStyle}>{selectedNode.node_speed}</span>{t.speedUnit}</p>
                     <p><span style={styles.valueStyle}>{selectedNode.node_countcar}</span>{t.carUnit}</p>
-                    <p style={{ color: color, fontWeight: "bold" }}>{selectedNode.node_status} {t.trafficSuffix}</p>
+                    <p style={{ color: color, fontWeight: "bold" }}>{selectedNode.node_status} Traffic</p>
                   </div>
                 </div>
               </div>
