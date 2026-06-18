@@ -5,6 +5,7 @@ import bgImage from "../../assets/22959.jpg";
 import CreateNode from "./CreateNode";
 import EditNode from "./EditNode";
 import DeleteNode from "./DeleteNode";
+import { useLanguage } from "../languagecontext/useLanguage";
 
 const CrudNode = () => {
 
@@ -16,6 +17,10 @@ const CrudNode = () => {
     const [selectedNode, setSelectedNode] = useState(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleteNodeData, setDeleteNodeData] = useState(null);
+
+    // ===== ภาษา (จาก Context กลาง) — แปลเฉพาะ UI ไม่แปลข้อมูลจากฐานข้อมูล =====
+    const { t: tAll } = useLanguage();
+    const t = tAll.crudNode;
 
     const fetchNodes = async () => {
         const querySnapshot = await getDocs(collection(db, "Sensor_Node"));
@@ -70,7 +75,7 @@ const CrudNode = () => {
     return (
         <div style={styles.container}>
 
-            <h1 style={styles.title}>จัดการข้อมูลโหนดเซนเซอร์</h1>
+            <h1 style={styles.title}>{t.title}</h1>
 
             {/* ค้นหา + ปุ่มเพิ่ม */}
             <div style={styles.topBar}>
@@ -78,18 +83,18 @@ const CrudNode = () => {
                 <div style={styles.searchBox}>
                     <input
                         type="text"
-                        placeholder="ค้นหาชื่อถนน..."
+                        placeholder={t.searchPlaceholder}
                         value={searchName}
                         onChange={(e) => setSearchName(e.target.value)}
                         onKeyDown={handleKeyDown}
                         style={styles.searchInput}
                     />
                     <button style={styles.searchButton} onClick={handleSearch}>
-                        ค้นหา
+                        {t.searchButton}
                     </button>
                     {searchedName !== "" && (
                         <button style={styles.resetButton} onClick={handleReset}>
-                            รีเซ็ต
+                            {t.resetButton}
                         </button>
                     )}
                 </div>
@@ -98,7 +103,7 @@ const CrudNode = () => {
                     style={styles.addButton}
                     onClick={() => setShowCreateModal(true)}
                 >
-                    + เพิ่มข้อมูล
+                    {t.addButton}
                 </button>
 
             </div>
@@ -108,11 +113,11 @@ const CrudNode = () => {
                 <table style={styles.table}>
                     <thead>
                         <tr>
-                            <th style={styles.th}>รหัสโหนด</th>
-                            <th style={styles.th}>ชื่อถนน</th>
-                            <th style={styles.th}>ละติจูด</th>
-                            <th style={styles.th}>ลองจิจูด</th>
-                            <th style={styles.th}>จัดการ</th>
+                            <th style={styles.th}>{t.colNodeId}</th>
+                            <th style={styles.th}>{t.colRoadName}</th>
+                            <th style={styles.th}>{t.colLatitude}</th>
+                            <th style={styles.th}>{t.colLongitude}</th>
+                            <th style={styles.th}>{t.colActions}</th>
                         </tr>
                     </thead>
 
@@ -120,7 +125,7 @@ const CrudNode = () => {
                         {filteredNodes.length === 0 ? (
                             <tr>
                                 <td colSpan="5" style={styles.noData}>
-                                    ไม่พบข้อมูลที่ค้นหา
+                                    {t.noData}
                                 </td>
                             </tr>
                         ) : (
@@ -136,14 +141,14 @@ const CrudNode = () => {
                                             style={styles.editButton}
                                             onClick={() => openEditModal(node)}
                                         >
-                                            แก้ไข
+                                            {t.editButton}
                                         </button>
 
                                         <button
                                             style={styles.deleteButton}
                                             onClick={() => openDeleteModal(node)}
                                         >
-                                            ลบ
+                                            {t.deleteButton}
                                         </button>
                                     </td>
                                 </tr>

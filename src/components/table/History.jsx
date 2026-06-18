@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { useLanguage } from "../languagecontext/useLanguage";
 
 function History({ showModal, logs, closeModal, getStatusColor, getBatteryColor }) {
 
@@ -7,6 +8,19 @@ function History({ showModal, logs, closeModal, getStatusColor, getBatteryColor 
     const [searchedStart, setSearchedStart] = useState("");
     const [searchedEnd, setSearchedEnd] = useState("");
     const [hasSearched, setHasSearched] = useState(false);
+
+    // ===== ภาษา (จาก Context กลาง) — แปลเฉพาะ UI ไม่แปลข้อมูลจากฐานข้อมูล =====
+    const { language, t: tAll } = useLanguage();
+    const t = tAll.history;
+    const dateLocale = language === "th" ? "th-TH" : "en-US";
+
+    // วันที่แสดงผลแบบ วัน/เดือน/ปี (ค.ศ.) เสมอ ไม่ขึ้นกับภาษา UI
+    const formatDate = (dateObj) => {
+        const day = dateObj.getDate();
+        const month = dateObj.getMonth() + 1;
+        const year = dateObj.getFullYear();
+        return `${day}/${month}/${year}`;
+    };
 
     const handleStartDateChange = (e) => {
         const value = e.target.value;
@@ -57,14 +71,14 @@ function History({ showModal, logs, closeModal, getStatusColor, getBatteryColor 
             <div style={styles.modal}>
 
                 <div style={styles.modalHeader}>
-                    <h2 style={styles.modalTitle}>ประวัติการจราจรย้อนหลัง</h2>
+                    <h2 style={styles.modalTitle}>{t.title}</h2>
                     <button style={styles.closeIcon} onClick={closeModal}>✕</button>
                 </div>
 
                 {/* ===== Search Box ===== */}
                 <div style={styles.searchBox}>
                     <div style={styles.dateGroup}>
-                        <label style={styles.label}>วันที่เริ่มต้น</label>
+                        <label style={styles.label}>{t.startDate}</label>
                         <input
                             type="date"
                             value={startDate}
@@ -76,7 +90,7 @@ function History({ showModal, logs, closeModal, getStatusColor, getBatteryColor 
                     <span style={styles.dateSeparator}>—</span>
 
                     <div style={styles.dateGroup}>
-                        <label style={styles.label}>วันที่สิ้นสุด</label>
+                        <label style={styles.label}>{t.endDate}</label>
                         <input
                             type="date"
                             value={endDate}
@@ -86,11 +100,11 @@ function History({ showModal, logs, closeModal, getStatusColor, getBatteryColor 
                     </div>
 
                     <button style={styles.searchButton} onClick={handleSearch}>
-                        ค้นหา
+                        {t.searchButton}
                     </button>
 
                     <button style={styles.resetButton} onClick={handleReset}>
-                        รีเซ็ต
+                        {t.resetButton}
                     </button>
                 </div>
 
@@ -99,12 +113,12 @@ function History({ showModal, logs, closeModal, getStatusColor, getBatteryColor 
                     <table style={styles.table}>
                         <thead>
                             <tr>
-                                <th style={styles.th}>วันที่</th>
-                                <th style={styles.th}>เวลา</th>
-                                <th style={styles.th}>จำนวนรถ</th>
-                                <th style={styles.th}>ความเร็ว</th>
-                                <th style={styles.th}>สถานะ</th>
-                                <th style={styles.th}>แบตเตอรี่</th>
+                                <th style={styles.th}>{t.colDate}</th>
+                                <th style={styles.th}>{t.colTime}</th>
+                                <th style={styles.th}>{t.colCarCount}</th>
+                                <th style={styles.th}>{t.colSpeed}</th>
+                                <th style={styles.th}>{t.colStatus}</th>
+                                <th style={styles.th}>{t.colBattery}</th>
                             </tr>
                         </thead>
 
@@ -112,7 +126,7 @@ function History({ showModal, logs, closeModal, getStatusColor, getBatteryColor 
                             {filteredLogs.length === 0 ? (
                                 <tr>
                                     <td colSpan={6} style={styles.emptyCell}>
-                                        ไม่พบข้อมูลในช่วงวันที่ที่เลือก
+                                        {t.noData}
                                     </td>
                                 </tr>
                             ) : (
@@ -120,14 +134,13 @@ function History({ showModal, logs, closeModal, getStatusColor, getBatteryColor 
                                     const dateObj = log.log_datetime?.toDate?.();
 
                                     const date = dateObj
-                                        ? dateObj.toLocaleDateString("th-TH")
+                                        ? formatDate(dateObj)
                                         : "-";
 
                                     const time = dateObj
-                                        ? dateObj.toLocaleTimeString("th-TH", {
+                                        ? dateObj.toLocaleTimeString(dateLocale, {
                                             hour: "2-digit",
                                             minute: "2-digit",
-                                            second: "2-digit"
                                         })
                                         : "-";
 
@@ -135,14 +148,14 @@ function History({ showModal, logs, closeModal, getStatusColor, getBatteryColor 
                                         <tr key={log.id} style={styles.tr}>
                                             <td style={styles.td}>{date}</td>
                                             <td style={styles.td}>{time}</td>
-                                            <td style={styles.td}>{log.log_countcar} คัน/นาที</td>
-                                            <td style={styles.td}>{log.log_speed} กม/ชม</td>
+                                            <td style={styles.td}>{log.log_countcar} {t.carUnit}</td>
+                                            <td style={styles.td}>{log.log_speed} {t.speedUnit}</td>
                                             <td style={{
                                                 ...styles.td,
                                                 color: getStatusColor(log.log_status),
                                                 fontWeight: "bold"
                                             }}>
-                                                {log.log_status}
+                                                {log.log_status} Traffic
                                             </td>
                                             <td style={{
                                                 ...styles.td,
@@ -161,7 +174,7 @@ function History({ showModal, logs, closeModal, getStatusColor, getBatteryColor 
 
                 <div style={styles.modalFooter}>
                     <button style={styles.closeButton} onClick={closeModal}>
-                        ปิด
+                        {t.closeButton}
                     </button>
                 </div>
 

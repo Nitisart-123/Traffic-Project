@@ -38,6 +38,14 @@ function Table() {
         return () => unsubscribe();
     }, []);
 
+    // วันที่แสดงผลแบบ วัน/เดือน/ปี (ค.ศ.) เสมอ ไม่ขึ้นกับภาษา UI
+    const formatDate = (dateObj) => {
+        const day = dateObj.getDate();
+        const month = dateObj.getMonth() + 1;
+        const year = dateObj.getFullYear();
+        return `${day}/${month}/${year}`;
+    };
+
     const getBatteryColor = (battery) => {
         if (battery > 70) return "#16a34a";
         if (battery > 30) return "#eab308";
@@ -158,7 +166,7 @@ function Table() {
                             const dateObj = node.node_datetime?.toDate?.();
 
                             const date = dateObj
-                                ? dateObj.toLocaleDateString(dateLocale)
+                                ? formatDate(dateObj)
                                 : "-";
 
                             const time = dateObj
@@ -180,7 +188,7 @@ function Table() {
                                             fontWeight: "bold",
                                         }}
                                     >
-                                        {node.node_status} Traffic
+                                        {node.node_status}
                                     </td>
                                     <td style={styles.td}>{node.node_countcar} {t.carUnit}</td>
                                     <td style={styles.td}>{node.node_speed} {t.speedUnit}</td>
