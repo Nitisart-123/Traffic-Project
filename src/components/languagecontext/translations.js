@@ -109,6 +109,13 @@ export const translations = {
       errorRequired: "กรุณากรอกข้อมูลให้ครบ",
       errorUpdateFailed: "เกิดข้อผิดพลาดในการแก้ไขข้อมูล",
     },
+    deleteNode: {
+      titlePrefix: "คุณต้องการลบข้อมูลโหนดเซนเซอร์",
+      titleSuffix: " หรือไม่?",
+      warning: "ประวัติข้อมูลย้อนหลังจะถูกลบ!",
+      deleteButton: "ลบข้อมูล",
+      cancelButton: "ยกเลิก",
+    },
   },
   en: {
     navbar: {
@@ -218,6 +225,13 @@ export const translations = {
       cancelButton: "Cancel",
       errorRequired: "Please fill in all the fields",
       errorUpdateFailed: "An error occurred while updating the data",
+    },
+    deleteNode: {
+      titlePrefix: "Do you want to delete the",
+      titleSuffix: "sensor node?",
+      warning: "Historical log data will also be deleted!",
+      deleteButton: "Delete",
+      cancelButton: "Cancel",
     },
   },
 };

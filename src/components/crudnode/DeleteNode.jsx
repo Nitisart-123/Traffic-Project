@@ -1,8 +1,13 @@
 import React from "react";
 import { doc, deleteDoc, collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../../firebase";
+import { useLanguage } from "../languagecontext/useLanguage";
 
 const DeleteNode = ({ nodeData, onClose, onSuccess }) => {
+
+    // ===== ภาษา (จาก Context กลาง) — แปลเฉพาะ UI ไม่แปลข้อมูลจากฐานข้อมูล =====
+    const { t: tAll } = useLanguage();
+    const t = tAll.deleteNode;
 
     const handleDelete = async () => {
 
@@ -39,10 +44,12 @@ const DeleteNode = ({ nodeData, onClose, onSuccess }) => {
 
             <div style={styles.modal}>
 
-                <h2 style={styles.title}>คุณต้องการลบข้อมูลโหนดเซนเซอร์{nodeData.node_name}หรือไม่?</h2>
+                <h2 style={styles.title}>
+                    {t.titlePrefix} {nodeData.node_name} {t.titleSuffix}
+                </h2>
 
                 <p style={styles.warning}>
-                    ประวัติข้อมูลย้อนหลังจะถูกลบ!
+                    {t.warning}
                 </p>
 
                 <div style={styles.buttonGroup}>
@@ -50,13 +57,13 @@ const DeleteNode = ({ nodeData, onClose, onSuccess }) => {
                         style={styles.deleteButton}
                         onClick={handleDelete}
                     >
-                        ลบข้อมูล
+                        {t.deleteButton}
                     </button>
                     <button
                         style={styles.cancelButton}
                         onClick={onClose}
                     >
-                        ยกเลิก
+                        {t.cancelButton}
                     </button>
                 </div>
 
