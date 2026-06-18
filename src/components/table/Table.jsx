@@ -188,7 +188,7 @@ function Table() {
                                             fontWeight: "bold",
                                         }}
                                     >
-                                        {node.node_status}
+                                        {node.node_status} Traffic
                                     </td>
                                     <td style={styles.td}>{node.node_countcar} {t.carUnit}</td>
                                     <td style={styles.td}>{node.node_speed} {t.speedUnit}</td>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { collection, addDoc, getDocs, query, where, Timestamp } from "firebase/firestore";
 import { db } from "../../firebase";
+import { useLanguage } from "../languagecontext/useLanguage";
 
 const CreateNode = ({ onClose, onSuccess }) => {
 
@@ -9,6 +10,10 @@ const CreateNode = ({ onClose, onSuccess }) => {
     const [latitude, setLatitude] = useState("");
     const [longitude, setLongitude] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+
+    // ===== ภาษา (จาก Context กลาง) — แปลเฉพาะ UI ไม่แปลข้อมูลจากฐานข้อมูล =====
+    const { t: tAll } = useLanguage();
+    const t = tAll.createNode;
 
     const generateNodeId = () => {
         const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -26,19 +31,19 @@ const CreateNode = ({ onClose, onSuccess }) => {
         setErrorMessage("");
 
         if (!nodeId || !nodeName || !latitude || !longitude) {
-            setErrorMessage("กรุณากรอกข้อมูลให้ครบ");
+            setErrorMessage(t.errorRequired);
             return;
         }
 
         // 🔥 เช็คห้ามมีอักษรพิเศษ
         if (!/^[a-zA-Z0-9]+$/.test(nodeId)) {
-            setErrorMessage("รหัสห้ามมีอักขระพิเศษ (!@#$%^)");
+            setErrorMessage(t.errorInvalidChars);
             return;
         }
 
         // 🔥 เช็คความยาวต้อง = 6 ตัว
         if (nodeId.length !== 6) {
-            setErrorMessage("รหัสต้องมีความยาว 6 ตัวอักษร");
+            setErrorMessage(t.errorLength);
             return;
         }
 
@@ -52,7 +57,7 @@ const CreateNode = ({ onClose, onSuccess }) => {
             const querySnapshot = await getDocs(q);
 
             if (!querySnapshot.empty) {
-                setErrorMessage("มีรหัสนี้ในระบบแล้ว");
+                setErrorMessage(t.errorDuplicate);
                 return;
             }
 
@@ -72,7 +77,7 @@ const CreateNode = ({ onClose, onSuccess }) => {
 
         } catch (error) {
             console.error(error);
-            setErrorMessage("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+            setErrorMessage(t.errorSaveFailed);
         }
     };
 
@@ -82,7 +87,7 @@ const CreateNode = ({ onClose, onSuccess }) => {
             <div style={styles.modal}>
 
                 <div style={styles.header}>
-                    <h2>เพิ่มข้อมูลโหนดเซนเซอร์</h2>
+                    <h2>{t.title}</h2>
 
                     <button style={styles.closeButton} onClick={onClose}>
                         ✕
@@ -96,7 +101,7 @@ const CreateNode = ({ onClose, onSuccess }) => {
                 )}
 
                 <div style={styles.body}>
-                    <label>รหัสโหนด</label>
+                    <label>{t.labelNodeId}</label>
                     <div style={styles.idBox}>
                         <input
                             value={nodeId}
@@ -108,25 +113,25 @@ const CreateNode = ({ onClose, onSuccess }) => {
                             style={styles.randomButton}
                             onClick={generateNodeId}
                         >
-                            สุ่ม
+                            {t.randomButton}
                         </button>
                     </div>
 
-                    <label>ชื่อโหนด</label>
+                    <label>{t.labelNodeName}</label>
                     <input
                         value={nodeName}
                         onChange={(e) => setNodeName(e.target.value)}
                         style={styles.input}
                     />
 
-                    <label>พิกัดละติจูด</label>
+                    <label>{t.labelLatitude}</label>
                     <input
                         value={latitude}
                         onChange={(e) => setLatitude(e.target.value)}
                         style={styles.input}
                     />
 
-                    <label>พิกัดลองจิจูด</label>
+                    <label>{t.labelLongitude}</label>
                     <input
                         value={longitude}
                         onChange={(e) => setLongitude(e.target.value)}
@@ -136,11 +141,11 @@ const CreateNode = ({ onClose, onSuccess }) => {
 
                 <div style={styles.footer}>
                     <button style={styles.saveButton} onClick={handleSave}>
-                        บันทึก
+                        {t.saveButton}
                     </button>
 
                     <button style={styles.cancelButton} onClick={onClose}>
-                        ปิด
+                        {t.cancelButton}
                     </button>
                 </div>
 
