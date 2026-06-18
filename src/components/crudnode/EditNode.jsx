@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
+import { useLanguage } from "../languagecontext/useLanguage";
 
 const EditNode = ({ nodeData, onClose, onSuccess }) => {
 
@@ -9,13 +10,17 @@ const EditNode = ({ nodeData, onClose, onSuccess }) => {
     const [longitude, setLongitude] = useState(nodeData?.node_longitude || "");
     const [errorMessage, setErrorMessage] = useState("");
 
+    // ===== ภาษา (จาก Context กลาง) — แปลเฉพาะ UI ไม่แปลข้อมูลจากฐานข้อมูล =====
+    const { t: tAll } = useLanguage();
+    const t = tAll.editNode;
+
     const handleUpdate = async () => {
 
         setErrorMessage("");
 
         // 🔥 เช็คค่าว่าง
         if (!nodeName.trim() || !latitude || !longitude) {
-            setErrorMessage("กรุณากรอกข้อมูลให้ครบ");
+            setErrorMessage(t.errorRequired);
             return;
         }
 
@@ -31,7 +36,7 @@ const EditNode = ({ nodeData, onClose, onSuccess }) => {
             onSuccess();
         } catch (error) {
             console.error("Update Error:", error);
-            setErrorMessage("เกิดข้อผิดพลาดในการแก้ไขข้อมูล");
+            setErrorMessage(t.errorUpdateFailed);
         }
     };
 
@@ -41,7 +46,7 @@ const EditNode = ({ nodeData, onClose, onSuccess }) => {
 
                 {/* Header */}
                 <div style={styles.header}>
-                    <h2 style={styles.title}>แก้ไขข้อมูลโหนดเซนเซอร์</h2>
+                    <h2 style={styles.title}>{t.title}</h2>
                     <button style={styles.closeButton} onClick={onClose}>✕</button>
                 </div>
 
@@ -51,21 +56,21 @@ const EditNode = ({ nodeData, onClose, onSuccess }) => {
                     </div>
                 )}
 
-                <label style={styles.label}>ชื่อโหนด</label>
+                <label style={styles.label}>{t.labelNodeName}</label>
                 <input
                     style={styles.input}
                     value={nodeName}
                     onChange={(e) => setNodeName(e.target.value)}
                 />
 
-                <label style={styles.label}>ละติจูด</label>
+                <label style={styles.label}>{t.labelLatitude}</label>
                 <input
                     style={styles.input}
                     value={latitude}
                     onChange={(e) => setLatitude(e.target.value)}
                 />
 
-                <label style={styles.label}>ลองจิจูด</label>
+                <label style={styles.label}>{t.labelLongitude}</label>
                 <input
                     style={styles.input}
                     value={longitude}
@@ -74,11 +79,11 @@ const EditNode = ({ nodeData, onClose, onSuccess }) => {
 
                 <div style={styles.buttonGroup}>
                     <button style={styles.saveButton} onClick={handleUpdate}>
-                        บันทึก
+                        {t.saveButton}
                     </button>
 
                     <button style={styles.cancelButton} onClick={onClose}>
-                        ยกเลิก
+                        {t.cancelButton}
                     </button>
                 </div>
 
