@@ -23,7 +23,6 @@ export const translations = {
       statusLabel: "สถานะการจราจร",
       speedUnit: "กม/ชม",
       carUnit: "คัน/นาที",
-      trafficSuffix: "การจราจร",
     },
     table: {
       title: "ตารางข้อมูลการจราจร",
@@ -140,7 +139,6 @@ export const translations = {
       statusLabel: "Traffic Status",
       speedUnit: "km/h",
       carUnit: "veh/min",
-      trafficSuffix: "Traffic",
     },
     table: {
       title: "Traffic Data Table",

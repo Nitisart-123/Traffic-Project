@@ -128,10 +128,6 @@ function Navbar({ user, setUser }) {
           </>
         ) : (
           <>
-            {!isMapPage && (
-              <button style={styles.button} onClick={() => navigate("/")}>{t.viewMap}</button>
-            )}
-
             {/* ===== Language Toggle (ยังไม่ login) ===== */}
             <i className="bi bi-globe2" style={styles.navLangIcon}></i>
             <div style={styles.langToggleNav}>
@@ -148,6 +144,10 @@ function Navbar({ user, setUser }) {
                 {t.langEn}
               </button>
             </div>
+
+            {!isMapPage && (
+              <button style={styles.button} onClick={() => navigate("/")}>{t.viewMap}</button>
+            )}
 
             {!isLoginPage && (
               <button style={styles.button} onClick={() => navigate("/login")}>{t.login}</button>

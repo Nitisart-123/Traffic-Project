@@ -3,6 +3,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import bgImage from "../assets/22959.jpg";
+import { useLanguage } from "./languagecontext/useLanguage";
 
 const Login = ({ onLogin }) => {
 
@@ -12,12 +13,16 @@ const Login = ({ onLogin }) => {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
+    // ===== ภาษา (จาก Context กลาง) — แปลเฉพาะ UI ไม่แปลข้อมูลจากฐานข้อมูล =====
+    const { t: tAll } = useLanguage();
+    const t = tAll.login;
+
     const handleLogin = async () => {
 
         setError("");
 
         if (!email || !password) {
-            setError("กรุณากรอกข้อมูลให้ครบ");
+            setError(t.errorRequired);
             return;
         }
 
@@ -29,7 +34,7 @@ const Login = ({ onLogin }) => {
         });
 
         if (!user) {
-            setError("อีเมลหรือรหัสผ่านไม่ถูกต้อง");
+            setError(t.errorInvalidCredentials);
             return;
         }
 
@@ -49,16 +54,16 @@ const Login = ({ onLogin }) => {
         <div style={styles.container}>
             {/* 🔥 HEADER */}
             <h1 style={styles.header}>
-                ระบบตรวจจับและวิเคราะห์การจราจรติดขัด
+                {t.header}
             </h1>
 
             <div style={styles.box}>
-                <h2 style={styles.h2}>เข้าสู่ระบบ</h2>
+                <h2 style={styles.h2}>{t.heading}</h2>
 
                 {error && <p style={styles.error}>{error}</p>}
 
                 <input
-                    placeholder="อีเมล"
+                    placeholder={t.emailPlaceholder}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     style={styles.input}
@@ -66,14 +71,14 @@ const Login = ({ onLogin }) => {
 
                 <input
                     type="password"
-                    placeholder="รหัสผ่าน"
+                    placeholder={t.passwordPlaceholder}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     style={styles.input}
                 />
 
                 <button onClick={handleLogin} style={styles.button}>
-                    เข้าสู่ระบบ
+                    {t.loginButton}
                 </button>
             </div>
         </div>
