@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useLanguage } from "./languagecontext/useLanguage";
+import CrudUserAccount from "./UserAccount/CrudUserAccount";
 
 function Navbar({ user, setUser }) {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ function Navbar({ user, setUser }) {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 715);
   const [showLangMenu, setShowLangMenu] = useState(false); // navbar (ก่อน login)
   const [showLangMenuInDropdown, setShowLangMenuInDropdown] = useState(false); // ใน hamburger dropdown
+  const [showAccountModal, setShowAccountModal] = useState(false); // ===== บัญชีผู้ใช้ =====
   const menuRef = useRef();
   const langMenuRef = useRef();
   const langMenuInDropdownRef = useRef();
@@ -91,6 +93,11 @@ function Navbar({ user, setUser }) {
     setShowLangMenuInDropdown(false);
   };
 
+  const handleOpenAccount = () => {
+    setShowMenu(false);
+    setShowAccountModal(true);
+  };
+
   const currentFlag = languages.find((l) => l.code === language)?.flag;
 
   const pageTitle = user
@@ -141,10 +148,11 @@ function Navbar({ user, setUser }) {
                     </div>
                   )}
 
-                  <div style={styles.profileBox}>
-                    <span style={styles.userText}>{user.mem_rank}</span>
-                    <span style={styles.userText}>{user.mem_name}</span>
-                  </div>
+                  {/* ===== ปุ่มบัญชีผู้ใช้ (แทนการแสดง mem_rank, mem_name ตรงๆ) ===== */}
+                  <button style={styles.accountButton} onClick={handleOpenAccount}>
+                    <i className="bi bi-person-circle" style={styles.accountButtonIcon}></i>
+                    {t.accountButton}
+                  </button>
 
                   {/* ===== Language Picker (ในเมนู dropdown) ===== */}
                   <div style={{ position: "relative" }} ref={langMenuInDropdownRef}>
@@ -236,6 +244,14 @@ function Navbar({ user, setUser }) {
         )}
 
       </div>
+
+      {/* ===== Modal บัญชีผู้ใช้ ===== */}
+      {showAccountModal && (
+        <CrudUserAccount
+          user={user}
+          onClose={() => setShowAccountModal(false)}
+        />
+      )}
     </nav>
   );
 }
@@ -335,18 +351,29 @@ const styles = {
     zIndex: 200,
   },
 
-  profileBox: {
+  // ===== ปุ่มบัญชีผู้ใช้ (แทน profileBox เดิม) =====
+  accountButton: {
     display: "flex",
     alignItems: "center",
+    gap: "8px",
+    width: "100%",
+    padding: "10px 4px",
     marginBottom: "8px",
-    paddingBottom: "8px",
+    paddingBottom: "10px",
     borderBottom: "1px solid #e5e7eb",
-    whiteSpace: "nowrap",
+    background: "transparent",
+    border: "none",
+    color: "#111",
+    fontWeight: "bold",
+    fontSize: "15px",
+    cursor: "pointer",
+    textAlign: "left",
+    fontFamily: "'Prompt', sans-serif",
   },
 
-  userText: {
-    fontWeight: "bold",
-    color: "#333",
+  accountButtonIcon: {
+    fontSize: "18px",
+    color: "#1976D2",
   },
 
   // ===== ไอคอนธงกลม =====

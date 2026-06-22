@@ -14,6 +14,7 @@ export const translations = {
       langLabel: "ไทย",
       langTh: "ไทย",
       langEn: "English",
+      accountButton: "บัญชีผู้ใช้",
     },
     map: {
       searchPlaceholder: "ค้นหาชื่อถนน...",
@@ -115,6 +116,16 @@ export const translations = {
       deleteButton: "ลบข้อมูล",
       cancelButton: "ยกเลิก",
     },
+    userAccount: {
+      title: "บัญชีผู้ใช้",
+      loading: "กำลังโหลดข้อมูล...",
+      notFound: "ไม่พบข้อมูลผู้ใช้",
+      labelRank: "ชื่อตำแหน่งงาน",
+      labelName: "ชื่อ",
+      labelEmail: "อีเมล",
+      labelPassword: "รหัสผ่าน",
+      closeButton: "ปิด",
+    },
   },
   en: {
     navbar: {
@@ -130,6 +141,7 @@ export const translations = {
       langLabel: "English",
       langTh: "Thai",
       langEn: "English",
+      accountButton: "Account",
     },
     map: {
       searchPlaceholder: "Search road name...",
@@ -230,6 +242,16 @@ export const translations = {
       warning: "Historical log data will also be deleted!",
       deleteButton: "Delete",
       cancelButton: "Cancel",
+    },
+    userAccount: {
+      title: "User Account",
+      loading: "Loading...",
+      notFound: "User data not found",
+      labelRank: "Job Title",
+      labelName: "Name",
+      labelEmail: "Email",
+      labelPassword: "Password",
+      closeButton: "Close",
     },
   },
 };
