@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { useLanguage } from "../languagecontext/useLanguage";
@@ -14,7 +14,7 @@ const CrudUserAccount = ({ user, onClose }) => {
     const [loading, setLoading] = useState(true);
     const [showEditModal, setShowEditModal] = useState(false);
 
-    const fetchMember = async () => {
+    const fetchMember = useCallback(async () => {
         if (!user?.id) {
             setLoading(false);
             return;
@@ -32,11 +32,11 @@ const CrudUserAccount = ({ user, onClose }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [user]);
 
     useEffect(() => {
         fetchMember();
-    }, [user]);
+    }, [fetchMember]);
 
     // จุดแทนรหัสผ่านจริง ตามจำนวนความยาวของรหัสผ่านจริง
     const maskedPassword = memberData?.mem_password
@@ -254,6 +254,7 @@ const styles = {
         cursor: "pointer",
         fontWeight: "bold",
         fontSize: "16px",
+        fontFamily: "'Prompt', sans-serif",
     },
 
     editIcon: {
@@ -270,6 +271,7 @@ const styles = {
         cursor: "pointer",
         fontWeight: "bold",
         fontSize: "16px",
+        fontFamily: "'Prompt', sans-serif",
     },
 };
 

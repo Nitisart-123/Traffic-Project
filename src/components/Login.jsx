@@ -87,7 +87,6 @@ const Login = ({ onLogin }) => {
 
 const styles = {
     container: {
-        fontFamily: "'Prompt', sans-serif",  // 🔥 ใส่ตรงนี้
         height: "100vh",
         display: "flex",
         justifyContent: "center",
@@ -101,6 +100,7 @@ const styles = {
     },
 
     header: {
+        fontFamily: "'Prompt', sans-serif",
         position: "absolute",   // 🔥 ลอยด้านบน
         top: "100px",
         fontSize: "50px",
@@ -137,9 +137,11 @@ const styles = {
         color: "white",
         border: "none",
         borderRadius: "8px",
+        fontWeight: "bold",
     },
 
     h2: {
+        fontFamily: "'Prompt', sans-serif",
         fontSize: "40px",   // 👈 เพิ่ม
         marginTop: "0px",
         marginBottom: "25px",
