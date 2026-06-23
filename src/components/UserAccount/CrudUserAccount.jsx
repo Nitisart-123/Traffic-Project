@@ -3,6 +3,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { useLanguage } from "../languagecontext/useLanguage";
 import bgImage from "../../assets/22959.jpg";
+import EditUserAccount from "./EditUserAccount";
 
 const CrudUserAccount = ({ user, onClose }) => {
 
@@ -11,28 +12,29 @@ const CrudUserAccount = ({ user, onClose }) => {
 
     const [memberData, setMemberData] = useState(user || null);
     const [loading, setLoading] = useState(true);
+    const [showEditModal, setShowEditModal] = useState(false);
+
+    const fetchMember = async () => {
+        if (!user?.id) {
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const memberRef = doc(db, "Traffic_Mem", user.id);
+            const snapshot = await getDoc(memberRef);
+
+            if (snapshot.exists()) {
+                setMemberData({ id: snapshot.id, ...snapshot.data() });
+            }
+        } catch (error) {
+            console.error("Fetch member error:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchMember = async () => {
-            if (!user?.id) {
-                setLoading(false);
-                return;
-            }
-
-            try {
-                const memberRef = doc(db, "Traffic_Mem", user.id);
-                const snapshot = await getDoc(memberRef);
-
-                if (snapshot.exists()) {
-                    setMemberData({ id: snapshot.id, ...snapshot.data() });
-                }
-            } catch (error) {
-                console.error("Fetch member error:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchMember();
     }, [user]);
 
@@ -40,6 +42,11 @@ const CrudUserAccount = ({ user, onClose }) => {
     const maskedPassword = memberData?.mem_password
         ? "•".repeat(memberData.mem_password.length)
         : "";
+
+    const handleEditSuccess = (updatedMember) => {
+        setMemberData(updatedMember);
+        setShowEditModal(false);
+    };
 
     return (
         <div style={styles.overlay}>
@@ -93,12 +100,29 @@ const CrudUserAccount = ({ user, onClose }) => {
                 )}
 
                 <div style={styles.buttonGroup}>
+                    <button
+                        style={styles.editBtnFull}
+                        onClick={() => setShowEditModal(true)}
+                        disabled={loading || !memberData}
+                    >
+                        <i className="bi bi-pencil-square" style={styles.editIcon}></i>
+                        {t.editButton}
+                    </button>
+
                     <button style={styles.closeBtnFull} onClick={onClose}>
                         {t.closeButton}
                     </button>
                 </div>
 
             </div>
+
+            {showEditModal && (
+                <EditUserAccount
+                    memberData={memberData}
+                    onClose={() => setShowEditModal(false)}
+                    onSuccess={handleEditSuccess}
+                />
+            )}
         </div>
     );
 };
@@ -211,20 +235,41 @@ const styles = {
 
     buttonGroup: {
         display: "flex",
-        justifyContent: "center",
+        flexDirection: "row",
+        gap: "10px",
         marginTop: "24px",
     },
 
-    closeBtnFull: {
-        width: "100%",
-        backgroundColor: "#ef4444",
+    editBtnFull: {
+        flex: 1,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "8px",
+        backgroundColor: "#1976D2",
         color: "white",
+        border: "none",
         padding: "12px 13px",
         borderRadius: "8px",
         cursor: "pointer",
         fontWeight: "bold",
-        fontSize: "18px",
-        // fontFamily: "'Prompt', sans-serif",
+        fontSize: "16px",
+    },
+
+    editIcon: {
+        fontSize: "16px",
+    },
+
+    closeBtnFull: {
+        flex: 1,
+        backgroundColor: "#ef4444",
+        color: "white",
+        border: "none",
+        padding: "12px 13px",
+        borderRadius: "8px",
+        cursor: "pointer",
+        fontWeight: "bold",
+        fontSize: "16px",
     },
 };
 
