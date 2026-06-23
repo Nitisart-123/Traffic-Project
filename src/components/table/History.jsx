@@ -332,7 +332,7 @@ const styles = {
     },
 
     closeButton: {
-        backgroundColor: "#dc2626",
+        backgroundColor: "#ef4444",
         color: "white",
         border: "none",
         padding: "10px 20px",

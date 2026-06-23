@@ -141,7 +141,7 @@ export const translations = {
       langLabel: "English",
       langTh: "Thai",
       langEn: "English",
-      accountButton: "Account",
+      accountButton: "User Account",
     },
     map: {
       searchPlaceholder: "Search road name...",

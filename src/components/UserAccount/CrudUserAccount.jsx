@@ -217,15 +217,14 @@ const styles = {
 
     closeBtnFull: {
         width: "100%",
-        backgroundColor: "#1976D2",
+        backgroundColor: "#ef4444",
         color: "white",
-        border: "none",
-        padding: "14px 15px",
+        padding: "12px 13px",
         borderRadius: "8px",
         cursor: "pointer",
         fontWeight: "bold",
-        fontSize: "16px",
-        fontFamily: "'Prompt', sans-serif",
+        fontSize: "18px",
+        // fontFamily: "'Prompt', sans-serif",
     },
 };
 

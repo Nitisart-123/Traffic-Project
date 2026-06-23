@@ -273,7 +273,6 @@ const styles = {
   },
 
   button: {
-    fontFamily: "'Prompt', sans-serif",
     backgroundColor: "white",
     color: "#1976D2",
     border: "none",
@@ -298,9 +297,9 @@ const styles = {
   dropdown: {
     position: "absolute",
     top: "48px",
-    right: "17px",
+    right: "0px",
     background: "white",
-    borderRadius: "12px 0 12px 12px",
+    borderRadius: "12px",
     boxShadow: "0 8px 20px rgba(0,0,0,0.25)",
     padding: "12px",
     minWidth: "220px",
@@ -323,7 +322,9 @@ const styles = {
     width: "100%",
     padding: "10px 4px",
     background: "transparent",
-    color: "#111",
+    color: "#333",
+    fontSize: "16px",
+    fontWeight: "500",
     border: "none",
     borderBottom: "1px solid #e5e7eb",
     cursor: "pointer",
@@ -332,11 +333,12 @@ const styles = {
 
   menuHeader: {
     fontWeight: "bold",
-    color: "#111",
+    color: "#333",
     fontSize: "24px",
     marginBottom: "8px",
     paddingBottom: "10px",
     borderBottom: "1px solid #e5e7eb",
+    fontFamily: "'Prompt', sans-serif",
   },
 
   dropdownMobile: {
@@ -360,20 +362,20 @@ const styles = {
     padding: "10px 4px",
     marginBottom: "8px",
     paddingBottom: "10px",
-    borderBottom: "1px solid #e5e7eb",
-    background: "transparent",
+    borderRadius: "6px",
+    background: "#0000000d",
     border: "none",
-    color: "#111",
+    color: "#333",
     fontWeight: "bold",
-    fontSize: "15px",
+    fontSize: "16px",
     cursor: "pointer",
     textAlign: "left",
-    fontFamily: "'Prompt', sans-serif",
+    // fontFamily: "'Prompt', sans-serif",
   },
 
   accountButtonIcon: {
     fontSize: "18px",
-    color: "#1976D2",
+    color: "#333",
   },
 
   // ===== ไอคอนธงกลม =====
@@ -421,8 +423,8 @@ const styles = {
 
   langLabel: {
     color: "#333",
-    fontWeight: "bold",
-    fontSize: "14px",
+    fontWeight: "500",
+    fontSize: "16px",
     flexShrink: 0,
   },
 
@@ -523,11 +525,12 @@ const styles = {
   },
 
   logoutBtn: {
-    fontFamily: "'Prompt', sans-serif",
+    // fontFamily: "'Prompt', sans-serif",
     width: "100%",
     padding: "8px",
     background: "#ef4444",
     color: "white",
+    fontWeight: "bold",
     border: "none",
     borderRadius: "6px",
     cursor: "pointer",
