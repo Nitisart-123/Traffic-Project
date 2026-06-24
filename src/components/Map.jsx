@@ -2,45 +2,52 @@ import React, { useEffect, useRef, useState } from "react";
 import { GoogleMap, Marker, InfoWindow, useLoadScript } from "@react-google-maps/api";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
-import { useLanguage } from "./languagecontext/useLanguage";
 
 const mapAPIKey = import.meta.env.VITE_GOOGLE_MAPS_KEY;
 
-function Map() {
+function Map({ user }) {
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: mapAPIKey,
   });
 
   const mapRef = useRef(null);
 
-  // ===== ภาษา (จาก Context กลาง) — ใช้แปลเฉพาะ UI ไม่แปลข้อมูลจากฐานข้อมูล =====
-  const { t: tAll } = useLanguage();
-  const t = tAll.map;
-
   const [nodes, setNodes] = useState([]);
   const [center, setCenter] = useState(null);
   const [selectedNode, setSelectedNode] = useState(null);
   const [searchText, setSearchText] = useState("");
-  const [searchError, setSearchError] = useState(false);
+  const [searchError, setSearchError] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   const getStatusColor = (status) => {
-        if (status === "Standstill" || status === "Heavy")
-            return "#dc2626";
-        if (status === "Light")
-            return "#eab308";
-        if (status === "Normal")
-            return "#16a34a";
-    };
+    switch (status) {
+      case "Standstill":
+      case "Heavy":
+        return "#ff0000";
+      case "Light":
+        return "#ffc107";
+      case "Normal":
+        return "#28a745";
+      default:
+        return "#999";
+    }
+  };
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
       collection(db, "Sensor_Node"),
       (snapshot) => {
-        const data = snapshot.docs.map((doc) => ({
+        let data = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
+
+        // ===== กรองข้อมูลตาม mem_id ของผู้ใช้ที่เข้าสู่ระบบ =====
+        // ถ้ายังไม่เข้าสู่ระบบ (user เป็น null) จะแสดงข้อมูลทั้งหมดตามปกติ
+        if (user?.mem_id) {
+          data = data.filter((node) => node.mem_id === user.mem_id);
+        }
+
         setNodes(data);
 
         if (data.length > 0) {
@@ -53,12 +60,12 @@ function Map() {
       }
     );
     return () => unsubscribe();
-  }, []);
+  }, [user]);
 
   const suggestions = searchText.trim()
     ? nodes.filter((node) =>
-      node.node_name?.toLowerCase().includes(searchText.trim().toLowerCase())
-    )
+        node.node_name?.toLowerCase().includes(searchText.trim().toLowerCase())
+      )
     : [];
 
   const goToNode = (node) => {
@@ -74,11 +81,11 @@ function Map() {
     setSelectedNode(node);
     setSearchText(node.node_name);
     setShowSuggestions(false);
-    setSearchError(false);
+    setSearchError("");
   };
 
   const handleSearch = () => {
-    setSearchError(false);
+    setSearchError("");
     const keyword = searchText.trim().toLowerCase();
     if (!keyword) return;
 
@@ -87,7 +94,7 @@ function Map() {
     );
 
     if (!found) {
-      setSearchError(true);
+      setSearchError("ไม่พบชื่อที่ค้นหา");
       setShowSuggestions(false);
       return;
     }
@@ -121,18 +128,10 @@ function Map() {
           width: 360px;
         }
 
-        .map-info-dot {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-
-
         /* Tablet */
         @media (max-width: 768px) {
           .map-search-container {
-            width: calc(100vw - 150px);
+            width: calc(100vw - 32px);
             top: 12px;
           }
         }
@@ -140,6 +139,7 @@ function Map() {
         /* Mobile */
         @media (max-width: 480px) {
           .map-search-container {
+            width: calc(100vw - 24px);
             top: 10px;
           }
         }
@@ -168,10 +168,6 @@ function Map() {
 
         /* Tablet InfoWindow */
         @media (max-width: 768px) {
-          .map-info-dot {
-            width: 20px;
-            height: 20px;
-          }
           .map-info-card {
             min-width: 280px;
             padding: 10px 24px;
@@ -187,10 +183,6 @@ function Map() {
 
         /* Mobile InfoWindow */
         @media (max-width: 480px) {
-          .map-info-dot {
-            width: 15px;
-            height: 15px;
-          }
           .map-info-card {
             min-width: 220px;
             padding: 8px 16px;
@@ -213,7 +205,7 @@ function Map() {
         }}>
           <input
             type="text"
-            placeholder={t.searchPlaceholder}
+            placeholder="ค้นหาชื่อถนน..."
             value={searchText}
             onChange={(e) => {
               const val = e.target.value;
@@ -223,9 +215,9 @@ function Map() {
                 const found = nodes.some((node) =>
                   node.node_name?.toLowerCase().includes(val.trim().toLowerCase())
                 );
-                setSearchError(!found);
+                setSearchError(found ? "" : "ไม่พบชื่อที่ค้นหา");
               } else {
-                setSearchError(false);
+                setSearchError("");
               }
             }}
             onFocus={() => setShowSuggestions(true)}
@@ -238,7 +230,7 @@ function Map() {
               style={styles.clearButton}
               onClick={() => {
                 setSearchText("");
-                setSearchError(false);
+                setSearchError("");
                 setShowSuggestions(false);
               }}
             >
@@ -269,7 +261,7 @@ function Map() {
         )}
 
         {hasError && (
-          <div style={styles.dropdownError}>{t.notFound}</div>
+          <div style={styles.dropdownError}>ไม่พบชื่อที่ค้นหา</div>
         )}
       </div>
 
@@ -333,20 +325,20 @@ function Map() {
             >
               <div className="map-info-card" style={{ border: `5px solid ${color}` }}>
                 <div style={styles.header}>
-                  <div className="map-info-dot" style={{ backgroundColor: color }} />
+                  <div className="map-info-dot" style={{ ...styles.dot, backgroundColor: color }} />
                   <div className="map-info-nodename">{selectedNode.node_name}</div>
                   <div style={styles.closeBtn} onClick={() => setSelectedNode(null)}>✕</div>
                 </div>
 
                 <div className="map-info-datarow">
                   <div style={styles.label}>
-                    <p>{t.avgSpeed}</p>
-                    <p>{t.carCount}</p>
-                    <p>{t.statusLabel}</p>
+                    <p>ความเร็วเฉลี่ย</p>
+                    <p>จำนวนรถ</p>
+                    <p>สถานะการจราจร</p>
                   </div>
                   <div style={styles.value}>
-                    <p><span style={styles.valueStyle}>{selectedNode.node_speed}</span>{t.speedUnit}</p>
-                    <p><span style={styles.valueStyle}>{selectedNode.node_countcar}</span>{t.carUnit}</p>
+                    <p><span style={styles.valueStyle}>{selectedNode.node_speed}</span>กม/ชม</p>
+                    <p><span style={styles.valueStyle}>{selectedNode.node_countcar}</span>คัน/นาที</p>
                     <p style={{ color: color, fontWeight: "bold" }}>{selectedNode.node_status} Traffic</p>
                   </div>
                 </div>
@@ -437,6 +429,13 @@ const styles = {
     alignItems: "center",
     gap: "12px",
     marginBottom: "15px",
+  },
+
+  dot: {
+    width: "18px",
+    height: "18px",
+    borderRadius: "50%",
+    flexShrink: 0,
   },
 
   closeBtn: {

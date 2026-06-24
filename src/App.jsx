@@ -24,8 +24,8 @@ const [user, setUser] = useState(() => {
 
         <Routes>
 
-          {/* ทุกคนดูได้ */}
-          <Route path="/" element={<Map />} />
+          {/* ทุกคนดูได้ — ถ้า login จะกรองข้อมูลตาม mem_id ของผู้ใช้ */}
+          <Route path="/" element={<Map user={user} />} />
 
           {/* หน้า Login */}
           <Route path="/login" element={<Login onLogin={setUser} />} />
