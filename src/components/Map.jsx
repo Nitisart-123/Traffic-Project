@@ -5,7 +5,7 @@ import { db } from "../firebase";
 
 const mapAPIKey = import.meta.env.VITE_GOOGLE_MAPS_KEY;
 
-function Map({ user }) {
+function Map() {
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: mapAPIKey,
   });
@@ -37,16 +37,10 @@ function Map({ user }) {
     const unsubscribe = onSnapshot(
       collection(db, "Sensor_Node"),
       (snapshot) => {
-        let data = snapshot.docs.map((doc) => ({
+        const data = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
-
-        // ===== กรองข้อมูลตาม mem_id ของผู้ใช้ที่เข้าสู่ระบบ =====
-        // ถ้ายังไม่เข้าสู่ระบบ (user เป็น null) จะแสดงข้อมูลทั้งหมดตามปกติ
-        if (user?.mem_id) {
-          data = data.filter((node) => node.mem_id === user.mem_id);
-        }
 
         setNodes(data);
 
@@ -60,7 +54,7 @@ function Map({ user }) {
       }
     );
     return () => unsubscribe();
-  }, [user]);
+  }, []);
 
   const suggestions = searchText.trim()
     ? nodes.filter((node) =>
