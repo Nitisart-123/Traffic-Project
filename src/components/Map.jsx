@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { GoogleMap, Marker, InfoWindow, useLoadScript } from "@react-google-maps/api";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
+import { useLanguage } from "./languagecontext/useLanguage";
 
 const mapAPIKey = import.meta.env.VITE_GOOGLE_MAPS_KEY;
 
@@ -11,6 +12,10 @@ function Map() {
   });
 
   const mapRef = useRef(null);
+
+  // ===== ภาษา (จาก Context กลาง) — ใช้แปลเฉพาะ UI ไม่แปลข้อมูลจากฐานข้อมูล =====
+  const { t: tAll } = useLanguage();
+  const t = tAll.map;
 
   const [nodes, setNodes] = useState([]);
   const [center, setCenter] = useState(null);
@@ -88,7 +93,7 @@ function Map() {
     );
 
     if (!found) {
-      setSearchError("ไม่พบชื่อที่ค้นหา");
+      setSearchError(t.notFound);
       setShowSuggestions(false);
       return;
     }
@@ -199,7 +204,7 @@ function Map() {
         }}>
           <input
             type="text"
-            placeholder="ค้นหาชื่อถนน..."
+            placeholder={t.searchPlaceholder}
             value={searchText}
             onChange={(e) => {
               const val = e.target.value;
@@ -209,7 +214,7 @@ function Map() {
                 const found = nodes.some((node) =>
                   node.node_name?.toLowerCase().includes(val.trim().toLowerCase())
                 );
-                setSearchError(found ? "" : "ไม่พบชื่อที่ค้นหา");
+                setSearchError(found ? "" : t.notFound);
               } else {
                 setSearchError("");
               }
@@ -255,7 +260,7 @@ function Map() {
         )}
 
         {hasError && (
-          <div style={styles.dropdownError}>ไม่พบชื่อที่ค้นหา</div>
+          <div style={styles.dropdownError}>{t.notFound}</div>
         )}
       </div>
 
@@ -326,13 +331,13 @@ function Map() {
 
                 <div className="map-info-datarow">
                   <div style={styles.label}>
-                    <p>ความเร็วเฉลี่ย</p>
-                    <p>จำนวนรถ</p>
-                    <p>สถานะการจราจร</p>
+                    <p>{t.avgSpeed}</p>
+                    <p>{t.carCount}</p>
+                    <p>{t.statusLabel}</p>
                   </div>
                   <div style={styles.value}>
-                    <p><span style={styles.valueStyle}>{selectedNode.node_speed}</span>กม/ชม</p>
-                    <p><span style={styles.valueStyle}>{selectedNode.node_countcar}</span>คัน/นาที</p>
+                    <p><span style={styles.valueStyle}>{selectedNode.node_speed}</span>{t.speedUnit}</p>
+                    <p><span style={styles.valueStyle}>{selectedNode.node_countcar}</span>{t.carUnit}</p>
                     <p style={{ color: color, fontWeight: "bold" }}>{selectedNode.node_status} Traffic</p>
                   </div>
                 </div>
