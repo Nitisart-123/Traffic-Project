@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db } from "../../firebase";
 import bgImage from "../../assets/22959.jpg";
 import CreateNode from "./CreateNode";
 import EditNode from "./EditNode";
-import DeleteNode from "./DeleteNode";
-import { useLanguage } from "../languagecontext/useLanguage";
 
-const CrudNode = () => {
+const CrudNode = ({ user }) => {
 
     const [nodes, setNodes] = useState([]);
     const [searchName, setSearchName] = useState("");
@@ -15,20 +13,19 @@ const CrudNode = () => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedNode, setSelectedNode] = useState(null);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [deleteNodeData, setDeleteNodeData] = useState(null);
-
-    // ===== ภาษา (จาก Context กลาง) — แปลเฉพาะ UI ไม่แปลข้อมูลจากฐานข้อมูล =====
-    const { t: tAll } = useLanguage();
-    const t = tAll.crudNode;
 
     const fetchNodes = async () => {
         const querySnapshot = await getDocs(collection(db, "Sensor_Node"));
 
-        const data = querySnapshot.docs.map((doc) => ({
+        let data = querySnapshot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
         }));
+
+        // ===== กรองข้อมูลตาม mem_id ของผู้ใช้ที่เข้าสู่ระบบ =====
+        if (user?.mem_id) {
+            data = data.filter((node) => node.mem_id === user.mem_id);
+        }
 
         setNodes(data);
     };
@@ -36,18 +33,32 @@ const CrudNode = () => {
     useEffect(() => {
         const loadNodes = async () => {
             const querySnapshot = await getDocs(collection(db, "Sensor_Node"));
-            const data = querySnapshot.docs.map((doc) => ({
+
+            let data = querySnapshot.docs.map((doc) => ({
                 id: doc.id,
                 ...doc.data(),
             }));
+
+            // ===== กรองข้อมูลตาม mem_id ของผู้ใช้ที่เข้าสู่ระบบ =====
+            if (user?.mem_id) {
+                data = data.filter((node) => node.mem_id === user.mem_id);
+            }
+
             setNodes(data);
         };
         loadNodes();
-    }, []);
+    }, [user]);
 
     const openEditModal = (node) => {
         setSelectedNode(node);
         setShowEditModal(true);
+    };
+
+    const deleteNode = async (id) => {
+        if (window.confirm("ต้องการลบข้อมูลหรือไม่?")) {
+            await deleteDoc(doc(db, "Sensor_Node", id));
+            fetchNodes();
+        }
     };
 
     const handleSearch = () => {
@@ -67,15 +78,10 @@ const CrudNode = () => {
         node.node_name?.toLowerCase().includes(searchedName.toLowerCase())
     );
 
-    const openDeleteModal = (node) => {
-        setDeleteNodeData(node);
-        setShowDeleteModal(true);
-    };
-
     return (
         <div style={styles.container}>
 
-            <h1 style={styles.title}>{t.title}</h1>
+            <h1 style={styles.title}>ระบบจัดการโหนดเซนเซอร์</h1>
 
             {/* ค้นหา + ปุ่มเพิ่ม */}
             <div style={styles.topBar}>
@@ -83,18 +89,18 @@ const CrudNode = () => {
                 <div style={styles.searchBox}>
                     <input
                         type="text"
-                        placeholder={t.searchPlaceholder}
+                        placeholder="ค้นหาชื่อถนน..."
                         value={searchName}
                         onChange={(e) => setSearchName(e.target.value)}
                         onKeyDown={handleKeyDown}
                         style={styles.searchInput}
                     />
                     <button style={styles.searchButton} onClick={handleSearch}>
-                        {t.searchButton}
+                        ค้นหา
                     </button>
                     {searchedName !== "" && (
                         <button style={styles.resetButton} onClick={handleReset}>
-                            {t.resetButton}
+                            รีเซ็ต
                         </button>
                     )}
                 </div>
@@ -103,7 +109,7 @@ const CrudNode = () => {
                     style={styles.addButton}
                     onClick={() => setShowCreateModal(true)}
                 >
-                    {t.addButton}
+                    + เพิ่มข้อมูล
                 </button>
 
             </div>
@@ -113,11 +119,11 @@ const CrudNode = () => {
                 <table style={styles.table}>
                     <thead>
                         <tr>
-                            <th style={styles.th}>{t.colNodeId}</th>
-                            <th style={styles.th}>{t.colRoadName}</th>
-                            <th style={styles.th}>{t.colLatitude}</th>
-                            <th style={styles.th}>{t.colLongitude}</th>
-                            <th style={styles.th}>{t.colActions}</th>
+                            <th style={styles.th}>รหัสโหนด</th>
+                            <th style={styles.th}>ชื่อถนน</th>
+                            <th style={styles.th}>ละติจูด</th>
+                            <th style={styles.th}>ลองจิจูด</th>
+                            <th style={styles.th}>จัดการ</th>
                         </tr>
                     </thead>
 
@@ -125,7 +131,7 @@ const CrudNode = () => {
                         {filteredNodes.length === 0 ? (
                             <tr>
                                 <td colSpan="5" style={styles.noData}>
-                                    {t.noData}
+                                    ไม่พบข้อมูลที่ค้นหา
                                 </td>
                             </tr>
                         ) : (
@@ -141,14 +147,14 @@ const CrudNode = () => {
                                             style={styles.editButton}
                                             onClick={() => openEditModal(node)}
                                         >
-                                            {t.editButton}
+                                            แก้ไข
                                         </button>
 
                                         <button
                                             style={styles.deleteButton}
-                                            onClick={() => openDeleteModal(node)}
+                                            onClick={() => deleteNode(node.id)}
                                         >
-                                            {t.deleteButton}
+                                            ลบ
                                         </button>
                                     </td>
                                 </tr>
@@ -179,16 +185,6 @@ const CrudNode = () => {
                 />
             )}
 
-            {showDeleteModal && deleteNodeData && (
-                <DeleteNode
-                    nodeData={deleteNodeData}
-                    onClose={() => setShowDeleteModal(false)}
-                    onSuccess={() => {
-                        setShowDeleteModal(false);
-                        fetchNodes();
-                    }}
-                />
-            )}
         </div>
     );
 };
@@ -246,7 +242,7 @@ const styles = {
     },
 
     searchButton: {
-        backgroundColor: "#1976D2",
+        backgroundColor: "#2563eb",
         color: "white",
         border: "none",
         padding: "10px 18px",

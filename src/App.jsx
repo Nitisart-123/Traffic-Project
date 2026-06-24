@@ -24,25 +24,25 @@ const [user, setUser] = useState(() => {
 
         <Routes>
 
-          {/* ทุกคนดูได้ — ถ้า login จะกรองข้อมูลตาม mem_id ของผู้ใช้ */}
-          <Route path="/" element={<Map user={user} />} />
+          {/* ทุกคนดูได้ — แสดงข้อมูลทั้งหมดไม่กรองตาม mem_id */}
+          <Route path="/" element={<Map />} />
 
           {/* หน้า Login */}
           <Route path="/login" element={<Login onLogin={setUser} />} />
 
-          {/* 🔒 ต้อง login เท่านั้น */}
+          {/* 🔒 ต้อง login — กรองข้อมูลตาม mem_id ของผู้ใช้ */}
           <Route
             path="/crudnode"
             element={
-              user ? <CrudNode /> : <Navigate to="/login" />
+              user ? <CrudNode user={user} /> : <Navigate to="/login" />
             }
           />
 
-          {/* จะล็อก table ด้วยก็ได้ */}
+          {/* 🔒 ต้อง login — กรองข้อมูลตาม mem_id ของผู้ใช้ */}
           <Route
             path="/table"
             element={
-              user ? <Table /> : <Navigate to="/login" />
+              user ? <Table user={user} /> : <Navigate to="/login" />
             }
           />
 

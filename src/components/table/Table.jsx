@@ -3,9 +3,8 @@ import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "../../firebase";
 import bgImage from "../../assets/22959.jpg";
 import History from "./History";
-import { useLanguage } from "../languagecontext/useLanguage";
 
-function Table() {
+function Table({ user }) {
     const [nodes, setNodes] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [logs, setLogs] = useState([]);
@@ -13,19 +12,20 @@ function Table() {
     const [searchName, setSearchName] = useState("");
     const [searchedName, setSearchedName] = useState("");
 
-    // ===== ภาษา (จาก Context กลาง) — แปลเฉพาะ UI ไม่แปลข้อมูลจากฐานข้อมูล =====
-    const { language, t: tAll } = useLanguage();
-    const t = tAll.table;
-    const dateLocale = language === "th" ? "th-TH" : "en-US";
-
     useEffect(() => {
         const unsubscribe = onSnapshot(
             collection(db, "Sensor_Node"),
             (snapshot) => {
-                const data = snapshot.docs.map((doc) => ({
+                let data = snapshot.docs.map((doc) => ({
                     id: doc.id,
                     ...doc.data(),
                 }));
+
+                // ===== กรองข้อมูลตาม mem_id ของผู้ใช้ที่เข้าสู่ระบบ =====
+                // ถ้ายังไม่เข้าสู่ระบบ (user เป็น null) จะแสดงข้อมูลทั้งหมดตามปกติ
+                if (user?.mem_id) {
+                    data = data.filter((node) => node.mem_id === user.mem_id);
+                }
 
                 data.sort((a, b) =>
                     b.node_datetime?.seconds - a.node_datetime?.seconds
@@ -36,15 +36,7 @@ function Table() {
         );
 
         return () => unsubscribe();
-    }, []);
-
-    // วันที่แสดงผลแบบ วัน/เดือน/ปี (ค.ศ.) เสมอ ไม่ขึ้นกับภาษา UI
-    const formatDate = (dateObj) => {
-        const day = dateObj.getDate();
-        const month = dateObj.getMonth() + 1;
-        const year = dateObj.getFullYear();
-        return `${day}/${month}/${year}`;
-    };
+    }, [user]);
 
     const getBatteryColor = (battery) => {
         if (battery > 70) return "#16a34a";
@@ -119,23 +111,23 @@ function Table() {
 
     return (
         <div style={styles.container}>
-            <h1 style={styles.title}>{t.title}</h1>
+            <h1 style={styles.title}>ตารางข้อมูลการจราจร</h1>
 
             <div style={styles.searchBox}>
                 <input
                     type="text"
-                    placeholder={t.searchPlaceholder}
+                    placeholder="ค้นหาชื่อถนน..."
                     value={searchName}
                     onChange={(e) => setSearchName(e.target.value)}
                     onKeyDown={handleKeyDown}
                     style={styles.searchInput}
                 />
                 <button style={styles.searchButton} onClick={handleSearch}>
-                    {t.searchButton}
+                    ค้นหา
                 </button>
                 {searchedName !== "" && (
                     <button style={styles.resetButton} onClick={handleReset}>
-                        {t.resetButton}
+                        รีเซ็ต
                     </button>
                 )}
             </div>
@@ -143,14 +135,14 @@ function Table() {
             <table style={styles.table}>
                 <thead>
                     <tr>
-                        <th style={styles.th}>{t.colDate}</th>
-                        <th style={styles.th}>{t.colTime}</th>
-                        <th style={styles.th}>{t.colName}</th>
-                        <th style={styles.th}>{t.colStatus}</th>
-                        <th style={styles.th}>{t.colCarCount}</th>
-                        <th style={styles.th}>{t.colSpeed}</th>
-                        <th style={styles.th}>{t.colBattery}</th>
-                        <th style={styles.th}>{t.colHistory}</th>
+                        <th style={styles.th}>วันที่</th>
+                        <th style={styles.th}>เวลา</th>
+                        <th style={styles.th}>ชื่อ</th>
+                        <th style={styles.th}>สถานะการจราจร</th>
+                        <th style={styles.th}>จำนวนรถ</th>
+                        <th style={styles.th}>ความเร็ว</th>
+                        <th style={styles.th}>แบตเตอรี่</th>
+                        <th style={styles.th}>ประวัติ</th>
                     </tr>
                 </thead>
 
@@ -158,7 +150,7 @@ function Table() {
                     {filteredNodes.length === 0 ? (
                         <tr>
                             <td colSpan="8" style={styles.noData}>
-                                {t.noData}
+                                ไม่พบข้อมูลที่ค้นหา
                             </td>
                         </tr>
                     ) : (
@@ -166,11 +158,11 @@ function Table() {
                             const dateObj = node.node_datetime?.toDate?.();
 
                             const date = dateObj
-                                ? formatDate(dateObj)
+                                ? dateObj.toLocaleDateString("th-TH")
                                 : "-";
 
                             const time = dateObj
-                                ? dateObj.toLocaleTimeString(dateLocale, {
+                                ? dateObj.toLocaleTimeString("th-TH", {
                                     hour: "2-digit",
                                     minute: "2-digit",
                                 })
@@ -190,8 +182,8 @@ function Table() {
                                     >
                                         {node.node_status} Traffic
                                     </td>
-                                    <td style={styles.td}>{node.node_countcar} {t.carUnit}</td>
-                                    <td style={styles.td}>{node.node_speed} {t.speedUnit}</td>
+                                    <td style={styles.td}>{node.node_countcar} คัน/นาที</td>
+                                    <td style={styles.td}>{node.node_speed} กม/ชม</td>
                                     <td
                                         style={{
                                             ...styles.td,
@@ -208,7 +200,7 @@ function Table() {
                                             onMouseOver={(e) => e.target.style.backgroundColor = "#1e40af"}
                                             onMouseOut={(e) => e.target.style.backgroundColor = "#1e3a8a"}
                                         >
-                                            {t.historyButton}
+                                            ดูประวัติ
                                         </button>
                                     </td>
                                 </tr>
@@ -274,7 +266,7 @@ const styles = {
     },
 
     searchButton: {
-        backgroundColor: "#1976D2",
+        backgroundColor: "#2563eb",
         color: "white",
         border: "none",
         padding: "10px 20px",
