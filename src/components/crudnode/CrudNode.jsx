@@ -166,6 +166,7 @@ const CrudNode = ({ user }) => {
 
             {showCreateModal && (
                 <CreateNode
+                    user={user}
                     onClose={() => setShowCreateModal(false)}
                     onSuccess={() => {
                         setShowCreateModal(false);
